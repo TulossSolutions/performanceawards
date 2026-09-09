@@ -1,0 +1,70 @@
+from collections import defaultdict
+from decimal import Decimal
+import logging
+from django.db import transaction
+from apps.football.models import Competition, PlayerFixture, Position
+from apps.scoring.models import PlayerSeasonScore
+
+logger=logging.getLogger(__name__)
+
+def average_percentiles(values):
+    ordered=sorted(values.items(),key=lambda x:(x[1],x[0])); result={}; i=0; n=len(ordered)
+    while i<n:
+        j=i
+        while j+1<n and ordered[j+1][1]==ordered[i][1]: j+=1
+        pct=Decimal("100") if n==1 else (Decimal(i+j)/Decimal("2"))/Decimal(n-1)*Decimal("100")
+        for k in range(i,j+1): result[ordered[k][0]]=pct
+        i=j+1
+    return result
+
+def _aggregate(rows,metric):
+    key=metric["source"]; available=[]; minutes=sum(r.minutes for r in rows)
+    if metric["aggregation"]=="DERIVED_RATE" and key=="clean_sheet":
+        eligible=[r for r in rows if r.position==Position.GK and r.minutes>=60]
+        if not eligible:return None
+        clean=sum(1 for r in eligible if (r.team_id==r.fixture.home_team_id and r.fixture.away_score==0) or (r.team_id==r.fixture.away_team_id and r.fixture.home_score==0))
+        return Decimal(clean)/Decimal(len(eligible))
+    for row in rows:
+        item=next((m for m in row.metrics.all() if m.metric_key==key and m.is_available),None)
+        if item: available.append((row,item))
+    if not available or not minutes:return None
+    agg=metric["aggregation"]
+    if agg=="RATE":
+        numerator=sum((m.numerator for _,m in available if m.numerator is not None),Decimal("0")); denominator=sum((m.denominator for _,m in available if m.denominator is not None),Decimal("0"))
+        return numerator/denominator if denominator else None
+    total=sum(((m.value or Decimal("0"))*(r.context_factor or Decimal("1")) if metric.get("context_adjust") and agg=="COUNT_PER90" else (m.value or Decimal("0")) for r,m in available),Decimal("0"))
+    return total/Decimal(minutes)*Decimal("90")
+
+@transaction.atomic
+def recompute_scores(season,formula,as_of):
+    logger.info("score_calculation_start season=%s formula=%s cutoff=%s",season.slug,formula.version,as_of)
+    rows=PlayerFixture.objects.filter(fixture__competition_season__season=season,fixture__competition_season__competition__is_tracked=True,fixture__status="FINISHED",fixture__starts_at__lte=as_of,fixture__stats_ingested_at__isnull=False).select_related("fixture","fixture__competition_season__competition","player").prefetch_related("metrics").order_by("fixture__starts_at","fixture_id","player_id")
+    grouped=defaultdict(list)
+    for row in rows: grouped[(row.position,row.player_id)].append(row)
+    configs=formula.config; output=[]
+    for position in (Position.GK,Position.DEF,Position.MID,Position.FWD):
+        player_rows={pid:items for (pos,pid),items in grouped.items() if pos==position}; aggregate={pid:{} for pid in player_rows}
+        for pid,items in player_rows.items():
+            for metric in configs["positions"][position]["metrics"]: aggregate[pid][metric["key"]]=_aggregate(items,metric)
+        population=[pid for pid,items in player_rows.items() if sum(x.minutes for x in items)>=180]
+        active={}; coverage={}
+        for metric in configs["positions"][position]["metrics"]:
+            cov=(Decimal(sum(aggregate[p][metric["key"]] is not None for p in population))/Decimal(len(population))) if population else Decimal("0")
+            active[metric["key"]]=cov>=Decimal(str(configs["coverage_threshold"])); coverage[metric["key"]]={"coverage":float(cov),"active":active[metric["key"]]}
+        total_weight=sum((Decimal(str(m["weight"])) for m in configs["positions"][position]["metrics"] if active[m["key"]]),Decimal("0"))
+        percentiles={}
+        for metric in configs["positions"][position]["metrics"]:
+            vals={pid:data[metric["key"]] for pid,data in aggregate.items() if data[metric["key"]] is not None}
+            percentiles[metric["key"]]=average_percentiles(vals) if active[metric["key"]] else {}
+        for pid,items in player_rows.items():
+            minutes=sum(x.minutes for x in items); eligible=minutes>=season.eligibility_minutes(as_of.date()) and total_weight>0; breakdown={}; performance=Decimal("0")
+            for metric in configs["positions"][position]["metrics"]:
+                key=metric["key"]; base=Decimal(str(metric["weight"])); effective=base/total_weight if active[key] and total_weight else Decimal("0"); pct=percentiles[key].get(pid)
+                score=(Decimal("100")-pct if metric["direction"]=="negative" and pct is not None else pct)
+                if score is not None: performance+=score*effective
+                breakdown[key]={"label":metric["label"],"raw_value":float(aggregate[pid][key]) if aggregate[pid][key] is not None else None,"percentile":float(score) if score is not None else None,"base_weight":float(base),"effective_weight":float(effective),"active":active[key],"direction":metric["direction"]}
+            availability=min(Decimal("100"),Decimal(minutes)/Decimal(season.availability_target_minutes(as_of.date()))*Decimal("100")); final=performance*Decimal(str(configs["performance_weight"]))+availability*Decimal(str(configs["availability_weight"])) if eligible else None
+            contexts=[x for x in items if x.context_factor is not None]
+            summary={"average_opponent_elo":float(sum((x.opponent_elo_before for x in contexts),Decimal("0"))/len(contexts)) if contexts else None,"average_context_factor":float(sum((x.context_factor for x in contexts),Decimal("0"))/len(contexts)) if contexts else None,"domestic_minutes":sum(x.minutes for x in items if x.fixture.competition_season.competition.competition_type==Competition.Type.DOMESTIC_LEAGUE),"ucl_minutes":sum(x.minutes for x in items if x.fixture.competition_season.competition.competition_type==Competition.Type.UCL)}
+            score,_=PlayerSeasonScore.objects.update_or_create(season=season,player_id=pid,formula=formula,as_of=as_of,defaults={"position":position,"eligible":eligible,"minutes":minutes,"appearances":len(items),"performance_score":performance if total_weight else None,"availability_score":availability,"final_score":final,"metric_breakdown":breakdown,"coverage_breakdown":coverage,"context_summary":summary}); output.append(score)
+    logger.info("score_calculation_complete season=%s formula=%s players=%s",season.slug,formula.version,len(output)); return output

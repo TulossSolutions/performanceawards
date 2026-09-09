@@ -1,0 +1,1 @@
+{"private":true,"scripts":{"css:build":"tailwindcss -i ./static_src/app.css -o ./static/dist/app.css --minify","css:watch":"tailwindcss -i ./static_src/app.css -o ./static/dist/app.css --watch"},"devDependencies":{"@tailwindcss/cli":"^4.1.0","tailwindcss":"^4.1.0"},"dependencies":{"htmx.org":"^2.0.8"}}

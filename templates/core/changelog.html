@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block content %}<h1>Formula changelog</h1>{% for formula in formulas %}<article class="card"><h2>v{{ formula.version }}</h2><p>Activated: {{ formula.activated_at|date:'j M Y H:i'|default:'Not activated' }}</p><p>{{ formula.notes }}</p><code>{{ formula.checksum_sha256 }}</code></article>{% empty %}<p>No formulas imported.</p>{% endfor %}{% endblock %}

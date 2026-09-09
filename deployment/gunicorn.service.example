@@ -1,0 +1,14 @@
+[Unit]
+Description=Objective football rankings Gunicorn
+After=network.target postgresql.service redis.service
+
+[Service]
+User=app
+Group=www-data
+WorkingDirectory=/path/to/app
+EnvironmentFile=/path/to/app/.env
+ExecStart=/path/to/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:8000 config.wsgi:application
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

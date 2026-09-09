@@ -1,0 +1,1 @@
+{% if entry.movement == None %}<span aria-label="New entry">NEW</span>{% elif entry.movement > 0 %}<span class="up" aria-label="Up {{ entry.movement }} places">↑{{ entry.movement }}</span>{% elif entry.movement < 0 %}<span class="down" aria-label="Down places">↓{{ entry.movement|stringformat:'d'|slice:'1:' }}</span>{% else %}<span aria-label="No change">—</span>{% endif %}

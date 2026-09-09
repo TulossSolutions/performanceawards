@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="player-head">
+  <div>
+    {% if player.image_url %}<img class="player-image" src="{{ player.image_url }}" alt="{{ player.name }}">{% endif %}
+    <p class="eyebrow">{{ player.get_primary_position_display }}</p>
+    <h1>{{ player.name }}</h1>
+    <p>{{ entry.team.name|default:'Team unavailable' }}{% if player.nationality_code %} · {{ player.nationality_code }}{% endif %}</p>
+    <p>{% if entry %}{% include 'components/movement.html' %}{% endif %} · {{ score.minutes|default:0 }} minutes · {{ score.appearances|default:0 }} appearances</p>
+  </div>
+  {% if entry %}<div class="hero-score"><span>#{{ entry.rank }}</span><strong>{{ entry.score|floatformat:2 }}</strong></div>{% endif %}
+</section>
+{% if score and score.eligible %}
+<section>
+  <h2>Score breakdown</h2>
+  <div class="table-wrap"><table><thead><tr><th scope="col">Metric</th><th scope="col">Value</th><th scope="col">Percentile</th><th scope="col">Base weight</th><th scope="col">Effective weight</th></tr></thead><tbody>
+  {% for key,metric in score.metric_breakdown.items %}{% if metric.active %}{% include 'components/metric_breakdown_row.html' with metric=metric %}{% endif %}{% endfor %}
+  </tbody></table></div>
+  <p>Formula v{{ score.formula.version }}</p>
+  <h2>Match context</h2>
+  <dl class="context-grid"><div><dt>Average opponent Elo</dt><dd>{{ score.context_summary.average_opponent_elo|default_if_none:'—'|floatformat:1 }}</dd></div><div><dt>Average context factor</dt><dd>{{ score.context_summary.average_context_factor|default_if_none:'—'|floatformat:3 }}</dd></div><div><dt>Domestic minutes</dt><dd>{{ score.context_summary.domestic_minutes }}</dd></div><div><dt>Champions League minutes</dt><dd>{{ score.context_summary.ucl_minutes }}</dd></div></dl>
+</section>
+{% else %}{% include 'components/eligibility_notice.html' %}{% endif %}
+<section><h2>Recent ranking history</h2><ol>{% for item in history %}<li>{{ item.snapshot.cutoff_at|date:'j M Y' }} — #{{ item.rank }} ({{ item.score|floatformat:2 }})</li>{% empty %}<li>No published history yet.</li>{% endfor %}</ol></section>
+<a class="button" href="{% url 'compare' %}?a={{ player.slug }}">Compare this player</a>
+{% endblock %}

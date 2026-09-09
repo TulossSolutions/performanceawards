@@ -1,0 +1,1 @@
+<tr><td>{{ metric.label }}</td><td>{% if metric.raw_value != None %}{{ metric.raw_value|floatformat:2 }}{% else %}<span title="Metric unavailable">—</span>{% endif %}</td><td>{{ metric.percentile|floatformat:1 }}</td><td>{{ metric.base_weight|floatformat:2 }}</td><td>{{ metric.effective_weight|floatformat:2 }}</td></tr>

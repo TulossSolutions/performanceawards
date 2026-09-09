@@ -1,0 +1,1 @@
+<ul>{% for player in players %}<li><a href="{% url 'player_detail' player.slug %}">{{ player.name }}</a> — {{ player.get_primary_position_display }}</li>{% empty %}<li>No matching players.</li>{% endfor %}</ul>

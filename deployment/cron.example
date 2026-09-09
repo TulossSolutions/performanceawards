@@ -1,0 +1,6 @@
+# Times are UTC. Retrieve unseen completed fixtures each day.
+0 3 * * * /path/to/venv/bin/python /path/to/app/manage.py sync_recent_results --since-last-success
+# Weekly deterministic aggregation and Monday publication.
+0 5 * * 1 /path/to/venv/bin/python /path/to/app/manage.py rebuild_elo --season current
+20 5 * * 1 /path/to/venv/bin/python /path/to/app/manage.py recompute_scores --season current --as-of "$(date -u +\%Y-\%m-\%dT06:00:00Z)"
+0 6 * * 1 /path/to/venv/bin/python /path/to/app/manage.py publish_rankings --season current --cutoff "$(date -u +\%Y-\%m-\%dT06:00:00Z)"
