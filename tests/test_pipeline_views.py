@@ -32,7 +32,7 @@ def test_full_pipeline_has_four_cohorts_and_breakdown(pipeline):
 
 def test_public_pages_and_htmx(pipeline):
     client = Client()
-    urls = ["/", "/rankings/attackers/", "/rankings/midfielders/", "/rankings/defenders/", "/rankings/goalkeepers/", "/players/demo-player-1/", "/compare/?a=demo-player-1&b=demo-player-2", "/methodology/", "/methodology/changelog/", "/seasons/2026-27/", "/healthz/", "/sitemap.xml"]
+    urls = ["/", "/rankings/attackers/", "/rankings/midfielders/", "/rankings/defenders/", "/rankings/goalkeepers/", "/players/demo-player-1/", "/compare/?a=demo-player-1&b=demo-player-2", "/methodology/", "/roadmap/", "/methodology/changelog/", "/seasons/2026-27/", "/healthz/", "/sitemap.xml"]
     assert all(client.get(url).status_code == 200 for url in urls)
     fragment = client.get("/rankings/attackers/", HTTP_HX_REQUEST="true")
     assert b"<html" not in fragment.content

@@ -14,6 +14,7 @@ def health(request):
     with connection.cursor() as cursor: cursor.execute("SELECT 1"); cursor.fetchone()
     return JsonResponse({"status":"ok"})
 def methodology(request): return render(request,"core/methodology.html",{"formula":ScoringFormula.objects.filter(is_active=True).first(),"page_title":"Methodology"})
+def roadmap(request): return render(request,"core/roadmap.html",{"page_title":"Roadmap"})
 def changelog(request): return render(request,"core/changelog.html",{"formulas":ScoringFormula.objects.order_by("-created_at"),"page_title":"Formula changelog"})
 @cache_page(3600)
 def season_archive(request,slug):

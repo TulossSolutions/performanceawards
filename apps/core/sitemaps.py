@@ -2,7 +2,7 @@ from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 from apps.football.models import Player,Season
 class StaticSitemap(Sitemap):
-    def items(self): return ["home","ranking_index","methodology","changelog"]
+    def items(self): return ["home","ranking_index","methodology","roadmap","changelog"]
     def location(self,item): return reverse(item)
 class PlayerSitemap(Sitemap):
     def items(self): return Player.objects.filter(active=True).order_by("pk")
