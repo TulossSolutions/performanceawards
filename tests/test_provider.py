@@ -5,6 +5,7 @@ from django.test import override_settings
 from apps.football.models import Position
 from apps.ingestion.providers.positions import normalize_position
 from apps.ingestion.providers.api_football import ApiFootballProvider
+from apps.ingestion.providers.base import ProviderRequestLimitReached
 
 def test_position_priority_and_unknown():
     assert normalize_position("goalkeeper", "ST", Position.FWD) == Position.GK
@@ -64,3 +65,25 @@ def test_non_iso3_country_code_is_not_persisted_as_iso3():
     payload={"errors":[],"response":[{"league":{"id":39,"name":"Premier League","type":"League"},"country":{"code":"GB-ENG"}}],"paging":{"current":1,"total":1}}
     client=Mock(); client.get.return_value=Mock(status_code=200,headers={},raise_for_status=Mock(),json=lambda:payload)
     assert ApiFootballProvider(client).list_competitions()[0].country_code is None
+
+@override_settings(API_FOOTBALL_KEY="secret", API_FOOTBALL_BASE_URL="https://example.test")
+def test_fixture_list_metadata_avoids_duplicate_fixture_request():
+    fixture_payload={"fixture":{"id":10,"date":"2024-08-10T12:00:00+00:00","status":{"short":"FT"}},"league":{"id":39,"season":2024,"round":"Regular Season - 1"},"teams":{"home":{"id":1,"name":"Home"},"away":{"id":2,"name":"Away"}},"goals":{"home":1,"away":0}}
+    players_payload={"errors":[],"response":[],"paging":{"current":1,"total":1}}
+    client=Mock(); client.get.return_value=Mock(status_code=200,headers={},raise_for_status=Mock(),json=lambda:players_payload)
+    provider=ApiFootballProvider(client); fixture=provider._normalize_fixture_meta(fixture_payload)
+    bundle=provider.get_fixture_details(fixture)
+    assert bundle.fixture.id == "10"
+    assert client.get.call_count == 1
+    assert client.get.call_args.kwargs["params"] == {"fixture":"10"}
+
+@override_settings(API_FOOTBALL_KEY="secret", API_FOOTBALL_BASE_URL="https://example.test")
+def test_configured_request_budget_is_a_hard_ceiling():
+    response=Mock(status_code=200,headers={},raise_for_status=Mock(),json=lambda:{"errors":[],"response":[]})
+    client=Mock(); client.get.return_value=response
+    provider=ApiFootballProvider(client); provider.configure_request_limits(max_requests=1)
+    provider._request("fixtures")
+    with pytest.raises(ProviderRequestLimitReached,match="budget"):
+        provider._request("fixtures/players")
+    assert provider.requests_made == 1
+    assert client.get.call_count == 1

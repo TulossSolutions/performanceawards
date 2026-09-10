@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.utils.text import slugify
 from apps.football.models import CompetitionSeason, Fixture, Player, PlayerFixture, PlayerFixtureMetric, PlayerTeamSeason, Team, TeamCompetitionSeason
 from apps.ingestion.models import RawProviderPayload
+from apps.ingestion.providers.base import ProviderRequestLimitReached
 from apps.ingestion.providers.positions import normalize_position
 
 logger=logging.getLogger(__name__)
@@ -62,6 +63,32 @@ def sync_fixtures(provider,season,start,end,unseen_only=False):
                 logger.exception("fixture_sync_failure provider=%s fixture=%s",provider_name,fixture.id)
                 failures.append((fixture.id,str(exc)))
     logger.info("fixture_sync_complete provider=%s season=%s imported=%s failures=%s",provider_name,season.slug,imported,len(failures)); return imported,failures
+
+def backfill_fixtures_chronologically(provider,season,start,end):
+    provider_name=provider.provider_name; queued=[]
+    competitions=season.competitionseason_set.filter(is_active=True,competition__is_tracked=True,competition__provider=provider_name).select_related("competition")
+    try:
+        for competition in competitions:
+            if not competition.provider_season_id: raise ValueError(f"Missing provider season ID for {competition.competition.name}")
+            for fixture in provider.list_fixtures(competition.provider_season_id,start,end):
+                if fixture.status != Fixture.Status.FINISHED: continue
+                if Fixture.objects.filter(provider=provider_name,provider_id=fixture.id,stats_ingested_at__isnull=False).exists(): continue
+                queued.append((fixture.starts_at,fixture.id,competition,fixture))
+    except ProviderRequestLimitReached:
+        return {"imported":0,"remaining":None,"latest_fixture_at":None,"failures":[],"budget_reached":True,"listing_complete":False}
+    queued.sort(key=lambda item:(item[0],item[1]))
+    imported=0; failures=[]; latest=None; budget_reached=False
+    for _,fixture_id,competition,fixture in queued:
+        try:
+            bundle=provider.get_fixture_details(fixture)
+            ingest_fixture_bundle(bundle,competition,provider_name,f"fixtures;fixtures/players?fixture={fixture_id}")
+            imported+=1; latest=fixture.starts_at
+        except ProviderRequestLimitReached:
+            budget_reached=True; break
+        except Exception as exc:
+            logger.exception("chronological_backfill_failure provider=%s fixture=%s",provider_name,fixture_id)
+            failures.append((fixture_id,str(exc))); break
+    return {"imported":imported,"remaining":max(0,len(queued)-imported),"latest_fixture_at":latest,"failures":failures,"budget_reached":budget_reached,"listing_complete":True}
 
 def replay_fixture(provider,provider_fixture_id):
     saved=RawProviderPayload.objects.filter(provider=provider.provider_name,resource_type="fixture",provider_resource_id=provider_fixture_id).order_by("-received_at").first()

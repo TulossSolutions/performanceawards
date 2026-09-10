@@ -61,6 +61,12 @@ python manage.py sync_fixtures --season 2026-27 --from 2026-08-01 --to 2026-09-0
 python manage.py sync_recent_results --since-last-success
 ```
 
+For a quota-limited historical simulation, the chronological backfill reuses fixture-list metadata so each unseen fixture needs only one player-statistics request. It interleaves all tracked competitions by kickoff time, enforces the Free-plan pace and request ceiling, and can freeze one season-progress snapshot after each daily batch:
+
+```bash
+python manage.py backfill_season --season 2024-25 --from 2024-08-01 --to 2025-05-31 --daily-call-budget 100 --request-interval 6.1 --publish-snapshot
+```
+
 The initial backfill should load a prior season when the API quota permits, rebuild Elo chronologically, then ingest and score the current season. If prior history is unavailable, Elo starts at 1500 and stabilizes as cross-league fixtures accumulate.
 
 ## StatsBomb Open Data backtesting

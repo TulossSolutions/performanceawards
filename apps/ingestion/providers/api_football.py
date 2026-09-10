@@ -14,6 +14,7 @@ from .base import (
     ProviderMetric,
     ProviderParticipation,
     ProviderPlayer,
+    ProviderRequestLimitReached,
     ProviderSeason,
     ProviderTeam,
 )
@@ -56,13 +57,32 @@ class ApiFootballProvider:
         self.base_url = settings.API_FOOTBALL_BASE_URL.rstrip("/")
         self.client = client or httpx.Client(timeout=20)
         self.quota_remaining = None
+        self.requests_made = 0
+        self.request_budget = None
+        self.min_request_interval = 0.0
+        self._last_request_at = None
+
+    def configure_request_limits(self, max_requests=None, min_interval=0.0):
+        self.request_budget = max_requests
+        self.min_request_interval = max(0.0, float(min_interval))
+
+    def _before_request(self):
+        if self.request_budget is not None and self.requests_made >= self.request_budget:
+            raise ProviderRequestLimitReached("Configured API-Football request budget reached")
+        if self._last_request_at is not None and self.min_request_interval:
+            elapsed = time.monotonic() - self._last_request_at
+            if elapsed < self.min_request_interval:
+                time.sleep(self.min_request_interval - elapsed)
+        self._last_request_at = time.monotonic()
+        self.requests_made += 1
 
     def _request(self, path, params=None):
         if self.quota_remaining == 0:
-            raise RuntimeError("API-Football daily request quota exhausted; resume on the next scheduled run")
+            raise ProviderRequestLimitReached("API-Football daily request quota exhausted; resume on the next scheduled run")
         url = f"{self.base_url}/{path.lstrip('/')}"
         for attempt in range(4):
             try:
+                self._before_request()
                 response = self.client.get(
                     url,
                     params=params or {},
@@ -161,12 +181,18 @@ class ApiFootballProvider:
         rows = self._all("fixtures", {"league": league_id, "season": year, "from": start.isoformat(), "to": end.isoformat()})
         return [self._normalize_fixture_meta(row, provider_season_id) for row in rows]
 
-    def get_fixture_details(self, fixture_id):
-        fixture_rows = self._all("fixtures", {"id": fixture_id})
-        if len(fixture_rows) != 1:
-            raise ValueError(f"Expected one API-Football fixture for {fixture_id}")
+    def get_fixture_details(self, fixture):
+        if isinstance(fixture, ProviderFixture) and fixture.raw_payload:
+            fixture_data = fixture.raw_payload
+            fixture_id = fixture.id
+        else:
+            fixture_id = fixture.id if isinstance(fixture, ProviderFixture) else str(fixture)
+            fixture_rows = self._all("fixtures", {"id": fixture_id})
+            if len(fixture_rows) != 1:
+                raise ValueError(f"Expected one API-Football fixture for {fixture_id}")
+            fixture_data = fixture_rows[0]
         player_payload = self._request("fixtures/players", {"fixture": fixture_id})
-        payload = {"fixture": fixture_rows[0], "players": player_payload}
+        payload = {"fixture": fixture_data, "players": player_payload}
         return self.normalize_fixture(payload)
 
     def _normalize_fixture_meta(self, data, provider_season_id=None):
@@ -182,7 +208,7 @@ class ApiFootballProvider:
             ProviderTeam(str(teams["home"]["id"]), teams["home"]["name"], logo_url=teams["home"].get("logo")),
             ProviderTeam(str(teams["away"]["id"]), teams["away"]["name"], logo_url=teams["away"].get("logo")),
             starts_at, STATUS_MAP.get(status, "SCHEDULED"), goals.get("home"), goals.get("away"),
-            league.get("round"), league.get("round"),
+            league.get("round"), league.get("round"), data,
         )
 
     def normalize_fixture(self, payload):
