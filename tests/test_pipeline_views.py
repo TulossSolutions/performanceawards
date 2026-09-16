@@ -1,6 +1,7 @@
 import json
 from datetime import datetime, timezone
 import pytest
+from django.core.cache import cache
 from django.core.management import call_command
 from django.test import Client
 from apps.football.models import Position, Season
@@ -37,6 +38,14 @@ def test_public_pages_and_htmx(pipeline):
     fragment = client.get("/rankings/attackers/", HTTP_HX_REQUEST="true")
     assert b"<html" not in fragment.content
     assert b'hx-push-url="true"' in fragment.content
+
+def test_home_shows_ranking_movement_next_to_score(pipeline):
+    snapshot,_=pipeline
+    entry=snapshot.entries.filter(position=Position.FWD).first()
+    snapshot.entries.filter(pk=entry.pk).update(previous_rank=entry.rank+2,movement=2)
+    cache.clear()
+    content=Client().get("/").content
+    assert b'aria-label="Up 2 places"' in content
 
 def test_publish_is_immutable_without_force(pipeline):
     snapshot, _ = pipeline
