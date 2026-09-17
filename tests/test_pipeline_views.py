@@ -13,6 +13,11 @@ from apps.scoring.services.formulas import validate_formula
 
 pytestmark = pytest.mark.django_db
 
+def test_methodology_links_to_github():
+    response = Client().get("/methodology/")
+    assert response.status_code == 200
+    assert b'href="https://github.com/TulossSolutions/performanceawards"' in response.content
+
 @pytest.fixture
 def pipeline():
     call_command("seed_demo_data", verbosity=0)
