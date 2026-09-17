@@ -33,11 +33,18 @@ def test_full_pipeline_has_four_cohorts_and_breakdown(pipeline):
 
 def test_public_pages_and_htmx(pipeline):
     client = Client()
-    urls = ["/", "/rankings/attackers/", "/rankings/midfielders/", "/rankings/defenders/", "/rankings/goalkeepers/", "/players/demo-player-1/", "/compare/?a=demo-player-1&b=demo-player-2", "/methodology/", "/roadmap/", "/methodology/changelog/", "/seasons/2026-27/", "/healthz/", "/sitemap.xml"]
+    urls = ["/", "/rankings/attackers/", "/rankings/midfielders/", "/rankings/defenders/", "/rankings/goalkeepers/", "/players/demo-player-1/", "/compare/?a=demo-player-1&b=demo-player-2", "/methodology/", "/roadmap/", "/manifesto/", "/methodology/changelog/", "/seasons/2026-27/", "/healthz/", "/sitemap.xml"]
     assert all(client.get(url).status_code == 200 for url in urls)
     fragment = client.get("/rankings/attackers/", HTTP_HX_REQUEST="true")
     assert b"<html" not in fragment.content
     assert b'hx-push-url="true"' in fragment.content
+
+    manifesto = client.get("/manifesto/")
+    assert b"RANKED. Manifesto" in manifesto.content
+    assert b"You should never have to wonder how the winner was chosen." in manifesto.content
+    player = client.get("/players/demo-player-1/")
+    assert b"Recent ranking position over time" in player.content
+    assert b"<polyline" in player.content
 
 def test_home_shows_ranking_movement_next_to_score(pipeline):
     snapshot,_=pipeline

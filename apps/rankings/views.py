@@ -30,9 +30,16 @@ def ranking(request,position_slug):
     return render(request,template,context)
 def player_detail(request,slug):
     player=get_object_or_404(Player,slug=slug); snapshot=latest_snapshot(); entry=RankingEntry.objects.filter(snapshot=snapshot,player=player).select_related("team").first() if snapshot else None
-    score=PlayerSeasonScore.objects.filter(player=player).select_related("formula").order_by("-as_of").first(); history=RankingEntry.objects.filter(player=player,snapshot__is_public=True).select_related("snapshot").order_by("-snapshot__cutoff_at")[:12]
+    score=PlayerSeasonScore.objects.filter(player=player).select_related("formula").order_by("-as_of").first(); history=list(RankingEntry.objects.filter(player=player,snapshot__is_public=True).select_related("snapshot").order_by("-snapshot__cutoff_at")[:12])
+    ordered_history=list(reversed(history)); ranks=[item.rank for item in ordered_history]; chart_points=[]
+    if ranks:
+        low,high=min(ranks),max(ranks); span=high-low
+        for index,item in enumerate(ordered_history):
+            x=300 if len(ordered_history)==1 else 32+index*536/(len(ordered_history)-1)
+            y=110 if span==0 else 32+(item.rank-low)*156/span
+            chart_points.append({"x":round(x,1),"y":round(y,1),"item":item})
     required_minutes=score.season.eligibility_minutes(score.as_of.date()) if score else None
-    return render(request,"players/detail.html",{"player":player,"entry":entry,"score":score,"history":history,"required_minutes":required_minutes,"page_title":player.name})
+    return render(request,"players/detail.html",{"player":player,"entry":entry,"score":score,"history":history,"chart_points":chart_points,"required_minutes":required_minutes,"page_title":player.name})
 def compare(request):
     a=Player.objects.filter(slug=request.GET.get("a","")).first(); b=Player.objects.filter(slug=request.GET.get("b","")).first(); snapshot=latest_snapshot(); rows=[]
     for player in (a,b): rows.append(RankingEntry.objects.filter(snapshot=snapshot,player=player).select_related("player","team").first() if player and snapshot else None)
