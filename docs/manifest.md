@@ -1,4 +1,6 @@
-# RANKED. Manifesto
+# Merit Manifesto
+
+**The Objective Standard for Performance.**
 
 ## Football deserves a better way to answer one question:
 
@@ -74,7 +76,7 @@ Every ranking begins with performance.
 
 ## No votes
 
-RANKED. is not decided by journalists.
+Merit is not decided by journalists.
 
 Not by captains.
 
@@ -106,7 +108,7 @@ A defender should not need goals to receive recognition.
 
 A midfielder should not be judged by the same criteria as a winger.
 
-So RANKED. does not force every footballer into one universal leaderboard.
+So Merit does not force every footballer into one universal leaderboard.
 
 Players compete within their role:
 
@@ -130,7 +132,7 @@ A Champions League knockout match is not identical to every domestic fixture.
 
 Performance exists in context.
 
-RANKED. accounts for that context using explicit rules.
+Merit accounts for that context using explicit rules.
 
 Opponent strength matters.
 
@@ -184,7 +186,7 @@ You should never have to guess what it is.
 
 A ranking without an explanation is just another opinion.
 
-For every player, RANKED. should be able to show:
+For every player, Merit should be able to show:
 
 * what happened on the pitch;
 * which statistics were used;
@@ -201,7 +203,7 @@ It is the result of the explanation.
 
 ## No black boxes
 
-RANKED. should never depend on a score that cannot itself be explained.
+Merit should never depend on a score that cannot itself be explained.
 
 A third-party player rating does not decide the ranking.
 
@@ -225,7 +227,7 @@ Some metrics may be unavailable.
 
 Some providers may correct data after publication.
 
-RANKED. will not quietly convert missing information into poor performance.
+Merit will not quietly convert missing information into poor performance.
 
 Coverage limitations should remain visible.
 

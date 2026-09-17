@@ -1,5 +1,5 @@
 [Unit]
-Description=Objective football rankings Gunicorn
+Description=Merit Gunicorn
 After=network.target postgresql.service redis.service
 
 [Service]

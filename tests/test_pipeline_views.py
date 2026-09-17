@@ -40,7 +40,8 @@ def test_public_pages_and_htmx(pipeline):
     assert b'hx-push-url="true"' in fragment.content
 
     manifesto = client.get("/manifesto/")
-    assert b"RANKED. Manifesto" in manifesto.content
+    assert b"Merit Manifesto" in manifesto.content
+    assert b"The Objective Standard for Performance." in manifesto.content
     assert b"You should never have to wonder how the winner was chosen." in manifesto.content
     player = client.get("/players/demo-player-1/")
     assert b"Recent ranking position over time" in player.content
@@ -52,6 +53,8 @@ def test_home_shows_ranking_movement_next_to_score(pipeline):
     snapshot.entries.filter(pk=entry.pk).update(previous_rank=entry.rank+2,movement=2)
     cache.clear()
     content=Client().get("/").content
+    assert b">MERIT<" in content
+    assert b"The Objective Standard for Performance." in content
     assert b'aria-label="Up 2 places"' in content
 
 def test_publish_is_immutable_without_force(pipeline):

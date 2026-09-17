@@ -2,7 +2,7 @@
 requires=["setuptools>=69"]
 build-backend="setuptools.build_meta"
 [project]
-name="objective-football-rankings"
+name="merit-football-rankings"
 version="0.1.0"
 requires-python=">=3.12"
 dependencies=["Django>=6.0,<6.1","psycopg[binary]>=3.2","django-redis>=5.4","redis>=5","httpx>=0.27","python-dotenv>=1","Markdown>=3.7,<4","gunicorn>=23; platform_system != 'Windows'"]
