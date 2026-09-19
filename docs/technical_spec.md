@@ -39,7 +39,7 @@ Status is evidence-based: ✅ means implemented and locally verified; ❌ means 
 | 22 | Persisted total context factor | ✅ |
 | 23 | Count, rate, negative, and clean-sheet aggregation | ✅ |
 | 24 | Position cohort and scaled eligibility | ✅ |
-| 25 | 85% metric coverage gating | ✅ |
+| 25 | 15% metric coverage gating in formula v1.1 (v1.0 retained) | ✅ |
 | 26 | Deterministic tied percentile scoring | ✅ |
 | 27 | Exact V1 scoring formula | ✅ |
 | 28 | Missing-metric weight renormalization | ✅ |
@@ -56,7 +56,7 @@ Status is evidence-based: ✅ means implemented and locally verified; ❌ means 
 | 39 | Complete player detail and context explanation | ✅ |
 | 40 | Searchable HTMX player comparison controls | ✅ |
 | 41 | Dynamic public methodology | ✅ |
-| 42 | Formula changelog for `FORMULA_VERSION=1.0` | ✅ |
+| 42 | Formula changelog for immutable v1.0 and active v1.1 | ✅ |
 | 43 | Progressive HTMX navigation and fragments | ✅ |
 | 44 | Local Tailwind implementation | ✅ |
 | 45 | Performance targets and query benchmarks | ✅ |
@@ -83,7 +83,7 @@ Status is evidence-based: ✅ means implemented and locally verified; ❌ means 
 | 66 | Production cron concurrency verification | ❌ (production deferred) |
 | 67 | Initial backfill strategy documentation | ✅ |
 | 68 | Working API-Football raw-payload fixture replay | ✅ |
-| 69 | Immutable formula lifecycle with configured v1.0 selection | ✅ |
+| 69 | Immutable formula lifecycle with configured v1.1 selection | ✅ |
 | 70 | Dedicated methodology-integrity test | ✅ |
 | 71 | Complete reusable component inventory | ✅ |
 | 72 | Empty, eligibility, and missing-value states | ✅ |
@@ -390,7 +390,7 @@ REDIS_URL=redis://127.0.0.1:6379/0
 
 API_FOOTBALL_KEY=
 FOOTBALL_PROVIDER=api_football
-FORMULA_VERSION=1.0
+FORMULA_VERSION=1.1
 API_FOOTBALL_BASE_URL=https://v3.football.api-sports.io
 
 DEFAULT_SEASON_SLUG=2026-27
@@ -1470,13 +1470,13 @@ coverage = players_with_available_metric / cohort_players_with_min_population_mi
 
 Use a minimum population threshold of 180 minutes for coverage analysis.
 
-A v1 metric becomes active for that calculation only when:
+A v1.1 metric becomes active for that calculation only when:
 
 ```text
-coverage >= 0.85
+coverage >= 0.15
 ```
 
-If a metric is below 85% coverage, disable that metric for the entire cohort/calculation and renormalize remaining weights proportionally.
+If a metric is below 15% coverage, disable that metric for the entire cohort/calculation and renormalize remaining weights proportionally. Published v1.0 snapshots retain their original 85% gate.
 
 Record active/disabled metrics in `coverage_breakdown`.
 
@@ -1516,12 +1516,12 @@ No z-score is required in v1.
 
 # 27. V1 scoring formula
 
-Create `/scoring_formulas/v1.json` with this conceptual schema:
+The active successor is `/scoring_formulas/v1_1.json`; keep `/scoring_formulas/v1.json` unchanged for historical reproducibility. The active formula has this conceptual schema:
 
 ```json
 {
-  "version": "1.0",
-  "coverage_threshold": 0.85,
+  "version": "1.1",
+  "coverage_threshold": 0.15,
   "performance_weight": 0.92,
   "availability_weight": 0.08,
   "positions": {
@@ -1998,6 +1998,11 @@ v1.0
 Activated: ...
 Notes: Initial public model.
 Checksum: ...
+
+v1.1
+Activated: ...
+Notes: Coverage threshold 15%; other scoring weights unchanged.
+Checksum: ...
 ```
 
 Future versions must be visible here.
@@ -2438,7 +2443,7 @@ Using recorded/sample JSON fixtures that contain no secrets:
 - negative metrics are not softened by opponent factor
 - rate metrics aggregate numerator/denominator, not average percentages
 - per-90 normalization correct
-- metric coverage below 85% disables metric cohort-wide
+- metric coverage below 15% disables metric cohort-wide in v1.1 (85% in archived v1.0)
 - disabled weight gets proportionally redistributed
 - negative percentile inverted
 - availability score correct
@@ -2870,7 +2875,7 @@ The MVP is considered functionally complete when all are true:
 - [x] ✅ Competition/stage factor is applied as specified.
 - [x] ✅ V1 scoring formula is stored/imported immutably as configured version `1.0`.
 - [x] ✅ Player metrics are aggregated per 90/rate correctly.
-- [x] ✅ Missing cohort metrics are disabled at <85% coverage and weights renormalize.
+- [x] ✅ Missing cohort metrics are disabled at <15% coverage in v1.1 and weights renormalize; v1.0 snapshots retain their 85% gate.
 - [x] ✅ Percentiles are calculated within position cohort.
 - [x] ✅ Eligibility minutes scale with season progress.
 - [x] ✅ Availability contributes 8% of final score.
@@ -3024,7 +3029,7 @@ The repository is done when a fresh developer can clone it and, following only t
 13. see the exact scoring methodology,
 14. run the complete test suite successfully.
 
-The same repository must then be switchable to API-Football by setting `API_FOOTBALL_KEY`, `FOOTBALL_PROVIDER=api_football`, and `FORMULA_VERSION=1.0`, then syncing real tracked competitions without changing ranking/business code. Sportmonks remains a future adapter.
+The same repository must then be switchable to API-Football by setting `API_FOOTBALL_KEY`, `FOOTBALL_PROVIDER=api_football`, and `FORMULA_VERSION=1.1`, then syncing real tracked competitions without changing ranking/business code. Sportmonks remains a future adapter.
 
 ---
 

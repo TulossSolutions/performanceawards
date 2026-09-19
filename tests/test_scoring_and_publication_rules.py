@@ -6,7 +6,7 @@ from types import SimpleNamespace
 import pytest
 from django.core.management import call_command
 
-from apps.football.models import PlayerFixtureMetric, Position, Season
+from apps.football.models import PlayerFixture, PlayerFixtureMetric, Position, Season
 from apps.rankings.models import RankingSnapshot
 from apps.rankings.services.publish import publish
 from apps.rankings.services.queries import latest_snapshot
@@ -90,3 +90,19 @@ def test_low_coverage_disables_metric_and_renormalizes_weights():
     assert not score.coverage_breakdown["goals_per90"]["active"]
     assert score.metric_breakdown["goals_per90"]["effective_weight"]==0
     assert abs(sum(x["effective_weight"] for x in score.metric_breakdown.values() if x["active"])-1)<0.00001
+
+def test_v1_1_activates_metric_above_15_percent_coverage():
+    call_command("seed_demo_data",verbosity=0)
+    season=Season.objects.get(is_current=True)
+    with open("scoring_formulas/v1_1.json",encoding="utf8") as handle: config=json.load(handle)
+    formula=ScoringFormula.objects.create(version="1.1",name="15% coverage model",config=config,checksum_sha256=validate_formula(config),is_active=True)
+    forwards=list(PlayerFixture.objects.filter(position=Position.FWD).order_by("player_id").values_list("player_id",flat=True).distinct())
+    PlayerFixtureMetric.objects.filter(metric_key="goals",player_fixture__position=Position.FWD).update(is_available=False)
+    PlayerFixtureMetric.objects.filter(metric_key="goals",player_fixture__position=Position.FWD,player_fixture__player_id__in=forwards[:4]).update(is_available=True)
+    cutoff=datetime(2026,9,30,23,59,59,tzinfo=timezone.utc)
+    rebuild_elo(season)
+    recompute_scores(season,formula,cutoff)
+    score=PlayerSeasonScore.objects.filter(season=season,formula=formula,position=Position.FWD).first()
+    coverage=score.coverage_breakdown["goals_per90"]
+    assert 0.15 <= coverage["coverage"] < 0.85
+    assert coverage["active"] is True
