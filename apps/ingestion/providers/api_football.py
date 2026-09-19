@@ -1,6 +1,7 @@
 import logging
 import random
 import time
+from dataclasses import replace
 from datetime import date, datetime, timezone
 from decimal import Decimal, InvalidOperation
 
@@ -230,6 +231,17 @@ class ApiFootballProvider:
                     player, team_id, opponent_id, games.get("position"), not bool(games.get("substitute")),
                     int(games.get("minutes") or 0), tuple(self._metrics(stats)),
                 ))
+        for team_id, team_score in ((fixture.home_team.id, fixture.home_score), (fixture.away_team.id, fixture.away_score)):
+            team_rows = [row for row in participations if row.team_id == team_id]
+            reported_goals = sum(
+                (metric.value for row in team_rows for metric in row.metrics if metric.key == "goals"),
+                Decimal("0"),
+            )
+            if fixture.status != "FINISHED" or team_score is None or reported_goals != team_score:
+                continue
+            for index, row in enumerate(participations):
+                if row.team_id == team_id and row.minutes > 0 and not any(metric.key == "goals" for metric in row.metrics):
+                    participations[index] = replace(row, metrics=(*row.metrics, ProviderMetric("goals", Decimal("0"))))
         return ProviderFixtureBundle(fixture, tuple(participations), payload)
 
     def _metrics(self, stats):

@@ -1,8 +1,11 @@
 from unittest.mock import Mock, patch
+from datetime import date, datetime, timezone
+from decimal import Decimal
 import httpx
 import pytest
+from django.core.management import call_command
 from django.test import override_settings
-from apps.football.models import Position
+from apps.football.models import Competition, CompetitionSeason, Fixture, Player, PlayerFixture, PlayerFixtureMetric, Position, Season, Team
 from apps.ingestion.providers.positions import normalize_position
 from apps.ingestion.providers.api_football import ApiFootballProvider
 from apps.ingestion.providers.base import ProviderRequestLimitReached
@@ -87,3 +90,40 @@ def test_configured_request_budget_is_a_hard_ceiling():
         provider._request("fixtures/players")
     assert provider.requests_made == 1
     assert client.get.call_count == 1
+
+@override_settings(API_FOOTBALL_KEY="secret", API_FOOTBALL_BASE_URL="https://example.test")
+def test_verified_team_score_fills_missing_player_goals_with_zero():
+    fixture={"fixture":{"id":10,"date":"2024-08-10T12:00:00+00:00","status":{"short":"FT"}},"league":{"id":39,"season":2024},"teams":{"home":{"id":1,"name":"Home"},"away":{"id":2,"name":"Away"}},"goals":{"home":1,"away":0}}
+    def player(player_id, goals):
+        return {"player":{"id":player_id,"name":str(player_id)},"statistics":[{"games":{"minutes":90,"position":"F"},"goals":{"total":goals}}]}
+    payload={"fixture":fixture,"players":{"response":[{"team":{"id":1},"players":[player(1,1),player(2,None)]},{"team":{"id":2},"players":[player(3,None)]}]}}
+    rows=ApiFootballProvider().normalize_fixture(payload).participations
+    assert [(row.player.id, next(metric.value for metric in row.metrics if metric.key=="goals")) for row in rows]==[("1",1),("2",0),("3",0)]
+
+@override_settings(API_FOOTBALL_KEY="secret", API_FOOTBALL_BASE_URL="https://example.test")
+def test_unreconciled_team_score_does_not_infer_missing_goals():
+    fixture={"fixture":{"id":10,"date":"2024-08-10T12:00:00+00:00","status":{"short":"FT"}},"league":{"id":39,"season":2024},"teams":{"home":{"id":1,"name":"Home"},"away":{"id":2,"name":"Away"}},"goals":{"home":2,"away":0}}
+    payload={"fixture":fixture,"players":{"response":[{"team":{"id":1},"players":[{"player":{"id":1,"name":"One"},"statistics":[{"games":{"minutes":90,"position":"F"},"goals":{"total":1}}]},{"player":{"id":2,"name":"Two"},"statistics":[{"games":{"minutes":90,"position":"F"},"goals":{"total":None}}]}]}]}}
+    rows=ApiFootballProvider().normalize_fixture(payload).participations
+    assert not any(metric.key=="goals" for metric in rows[1].metrics)
+
+@pytest.mark.django_db
+def test_historical_goal_repair_is_previewable_conservative_and_idempotent():
+    season=Season.objects.create(name="2024/25",slug="2024-25",starts_on=date(2024,8,1),ends_on=date(2025,5,31))
+    comp=Competition.objects.create(provider="api_football",provider_id="39",name="League",slug="league",competition_type="DOMESTIC_LEAGUE",is_tracked=True)
+    cs=CompetitionSeason.objects.create(competition=comp,season=season)
+    home=Team.objects.create(provider="api_football",provider_id="1",name="Home",slug="home")
+    away=Team.objects.create(provider="api_football",provider_id="2",name="Away",slug="away")
+    fixture=Fixture.objects.create(provider="api_football",provider_id="10",competition_season=cs,home_team=home,away_team=away,starts_at=datetime(2024,8,10,tzinfo=timezone.utc),status=Fixture.Status.FINISHED,home_score=1,away_score=2,stats_ingested_at=datetime(2024,8,10,tzinfo=timezone.utc))
+    rows=[]
+    for index, team in enumerate((home,home,away,away),start=1):
+        player=Player.objects.create(provider="api_football",provider_id=str(index),name=f"Player {index}",slug=f"player-{index}")
+        rows.append(PlayerFixture.objects.create(fixture=fixture,player=player,team=team,opponent=away if team==home else home,position=Position.FWD,minutes=90))
+    PlayerFixtureMetric.objects.create(player_fixture=rows[0],metric_key="goals",value=Decimal("1"))
+    PlayerFixtureMetric.objects.create(player_fixture=rows[2],metric_key="goals",value=Decimal("1"))
+    call_command("repair_missing_goals",season=season.slug)
+    assert not PlayerFixtureMetric.objects.filter(player_fixture=rows[1],metric_key="goals").exists()
+    call_command("repair_missing_goals",season=season.slug,apply=True)
+    call_command("repair_missing_goals",season=season.slug,apply=True)
+    assert list(PlayerFixtureMetric.objects.filter(player_fixture=rows[1],metric_key="goals").values_list("value",flat=True))==[Decimal("0")]
+    assert not PlayerFixtureMetric.objects.filter(player_fixture=rows[3],metric_key="goals").exists()

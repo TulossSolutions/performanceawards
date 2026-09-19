@@ -1,5 +1,6 @@
 from datetime import datetime,time,timezone
 from django.conf import settings
+from django.core.management import call_command
 from django.core.management.base import BaseCommand,CommandError
 from django.utils import timezone as django_timezone
 from django.utils.dateparse import parse_date
@@ -39,6 +40,8 @@ class Command(BaseCommand):
                 if result["failures"]: raise CommandError(f"Fixture backfill stopped after failure: {result['failures'][0]}")
                 snapshot_id=None
                 if o["publish_snapshot"] and result["latest_fixture_at"]:
+                    if provider.provider_name == "api_football":
+                        call_command("repair_missing_goals",season=season.slug,apply=True)
                     rebuild_elo(season)
                     cutoff=datetime.combine(result["latest_fixture_at"].date(),time.max,tzinfo=timezone.utc)
                     formula=ScoringFormula.objects.get(is_active=True)
