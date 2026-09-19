@@ -1,6 +1,6 @@
 # Merit
 
-**The Objective Standard for Performance.**
+**No votes. Just performance.**
 
 A server-rendered Django MVP that publishes explainable weekly GK, DEF, MID, and FWD rankings from normalized fixture statistics. Scores are deterministic, formula-versioned, and precomputed; public requests never contact the football provider or calculate rankings.
 

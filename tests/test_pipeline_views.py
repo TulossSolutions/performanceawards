@@ -48,7 +48,7 @@ def test_public_pages_and_htmx(pipeline):
 
     manifesto = client.get("/manifesto/")
     assert b"Merit Manifesto" in manifesto.content
-    assert b"The Objective Standard for Performance." in manifesto.content
+    assert b"No votes. Just performance." in manifesto.content
     assert b"You should never have to wonder how the winner was chosen." in manifesto.content
     player = client.get("/players/demo-player-1/")
     assert b"Season ranking position over time" in player.content
@@ -61,7 +61,9 @@ def test_home_shows_ranking_movement_next_to_score(pipeline):
     cache.clear()
     content=Client().get("/").content
     assert b">MERIT<" in content
-    assert b"The Objective Standard for Performance." in content
+    assert b"No votes. Just performance." in content
+    assert b'<meta name="description" content="No votes. Just performance.">' in content
+    assert "Merit — No votes. Just performance.".encode() in content
     assert b'aria-label="Up 2 places"' in content
 
 def test_position_tabs_highlight_current_filter(pipeline):

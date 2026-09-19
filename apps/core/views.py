@@ -12,7 +12,7 @@ from apps.scoring.models import ScoringFormula
 @cache_page(300)
 def home(request):
     snapshot=latest_snapshot(); groups={p:entries(snapshot,p,5) for p in (Position.FWD,Position.MID,Position.DEF,Position.GK)}
-    return render(request,"core/home.html",{"snapshot":snapshot,"groups":groups,"page_title":"Merit — The Objective Standard for Performance."})
+    return render(request,"core/home.html",{"snapshot":snapshot,"groups":groups,"page_title":"Merit — No votes. Just performance."})
 def health(request):
     with connection.cursor() as cursor: cursor.execute("SELECT 1"); cursor.fetchone()
     return JsonResponse({"status":"ok"})

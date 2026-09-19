@@ -1,6 +1,6 @@
 # Merit Manifesto
 
-**The Objective Standard for Performance.**
+**No votes. Just performance.**
 
 ## Football deserves a better way to answer one question:
 
