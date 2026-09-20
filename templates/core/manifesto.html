@@ -1,2 +1,16 @@
 {% extends 'base.html' %}
-{% block content %}<article class="prose">{{ manifesto_html }}</article>{% endblock %}
+{% block content %}
+<section class="border-b border-black/10 bg-[#111318] text-white">
+  <div class="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-10 lg:py-24">
+    <p class="mb-4 text-xs font-black uppercase tracking-[0.2em] text-[#c9a861]">What Merit stands for</p>
+    <h1 class="max-w-4xl text-white">No votes.<br><span class="text-[#c9a861]">Just performance.</span></h1>
+    <p class="mt-6 max-w-2xl text-base leading-7 text-white/60 sm:text-lg">A ranking should not ask for trust. It should show its evidence.</p>
+  </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:px-10 lg:py-16">
+  <article class="prose merit-manifesto max-w-4xl">
+    {{ manifesto_html }}
+  </article>
+</section>
+{% endblock %}

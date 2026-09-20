@@ -1,1 +1,9 @@
-<div class="notice" role="alert">{{ message|default:'Unable to load this section. Use the page link to try normal navigation.' }}</div>
+<div class="notice" role="alert">
+  <div class="flex items-start gap-3">
+    <span class="mt-0.5 font-black text-accent-deep" aria-hidden="true">!</span>
+    <div>
+      <p class="font-black text-ink">Unable to load this section</p>
+      <p class="mt-1 text-sm leading-6 text-black/60">{{ message|default:'Use the page link to try normal navigation.' }}</p>
+    </div>
+  </div>
+</div>

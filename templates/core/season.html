@@ -1,1 +1,48 @@
-{% extends 'base.html' %}{% block content %}<h1>{{ season.name }} archive</h1>{% if snapshot %}<p>Latest public snapshot: {{ snapshot.cutoff_at|date:'j M Y' }}</p><nav class="tabs"><a href="{% url 'ranking' 'attackers' %}?season={{ season.slug }}">Attackers</a><a href="{% url 'ranking' 'midfielders' %}?season={{ season.slug }}">Midfielders</a><a href="{% url 'ranking' 'defenders' %}?season={{ season.slug }}">Defenders</a><a href="{% url 'ranking' 'goalkeepers' %}?season={{ season.slug }}">Goalkeepers</a></nav>{% else %}{% include 'components/empty_state.html' %}{% endif %}{% endblock %}
+{% extends 'base.html' %}
+{% block content %}
+<section class="mx-auto max-w-7xl px-5 pb-8 pt-14 sm:px-8 lg:px-10 lg:pt-20">
+  <div class="grid gap-8 border-b border-black/10 pb-10 md:grid-cols-[1fr_auto] md:items-end">
+    <div>
+      <p class="mb-4 text-xs font-black uppercase tracking-[0.2em] text-[#9a7d38]">Season archive</p>
+      <h1>{{ season.name }}</h1>
+      {% if snapshot %}<p class="mt-4 text-sm text-black/50">Latest public snapshot · <span class="font-mono font-bold text-black/70">{{ snapshot.cutoff_at|date:'j M Y' }}</span></p>{% endif %}
+    </div>
+    {% if snapshot %}
+    <div class="flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-black/45">
+      <span class="size-2 rounded-full bg-[#c9a861]"></span> Archived ranking
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-5 py-8 sm:px-8 lg:px-10">
+  {% if snapshot %}
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <a class="group border border-black/10 bg-white p-6 no-underline transition hover:-translate-y-0.5 hover:border-[#c9a861] hover:shadow-xl hover:shadow-black/5" href="{% url 'ranking' 'attackers' %}?season={{ season.slug }}">
+      <span class="font-mono text-xs font-bold text-black/30">FWD</span>
+      <h2 class="mt-8 text-xl">Attackers</h2>
+      <p class="mt-2 text-sm text-black/50">View full ranking <span class="transition group-hover:ml-1">→</span></p>
+    </a>
+    <a class="group border border-black/10 bg-white p-6 no-underline transition hover:-translate-y-0.5 hover:border-[#c9a861] hover:shadow-xl hover:shadow-black/5" href="{% url 'ranking' 'midfielders' %}?season={{ season.slug }}">
+      <span class="font-mono text-xs font-bold text-black/30">MID</span>
+      <h2 class="mt-8 text-xl">Midfielders</h2>
+      <p class="mt-2 text-sm text-black/50">View full ranking <span class="transition group-hover:ml-1">→</span></p>
+    </a>
+    <a class="group border border-black/10 bg-white p-6 no-underline transition hover:-translate-y-0.5 hover:border-[#c9a861] hover:shadow-xl hover:shadow-black/5" href="{% url 'ranking' 'defenders' %}?season={{ season.slug }}">
+      <span class="font-mono text-xs font-bold text-black/30">DEF</span>
+      <h2 class="mt-8 text-xl">Defenders</h2>
+      <p class="mt-2 text-sm text-black/50">View full ranking <span class="transition group-hover:ml-1">→</span></p>
+    </a>
+    <a class="group border border-black/10 bg-white p-6 no-underline transition hover:-translate-y-0.5 hover:border-[#c9a861] hover:shadow-xl hover:shadow-black/5" href="{% url 'ranking' 'goalkeepers' %}?season={{ season.slug }}">
+      <span class="font-mono text-xs font-bold text-black/30">GK</span>
+      <h2 class="mt-8 text-xl">Goalkeepers</h2>
+      <p class="mt-2 text-sm text-black/50">View full ranking <span class="transition group-hover:ml-1">→</span></p>
+    </a>
+  </div>
+  {% else %}
+  <div class="max-w-3xl">
+    {% include 'components/empty_state.html' %}
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

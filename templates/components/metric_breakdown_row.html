@@ -1,1 +1,7 @@
-<tr><td>{{ metric.label }}</td><td>{% if metric.raw_value %}{{ metric.raw_value|floatformat:2 }}{% else %}<span title="Zero or unavailable">—</span>{% endif %}</td><td>{% if metric.percentile != None %}{{ metric.percentile|floatformat:1 }}{% else %}—{% endif %}</td><td>{{ metric.base_weight|floatformat:2 }}</td><td>{{ metric.effective_weight|floatformat:2 }}</td></tr>
+<tr>
+  <td class="font-semibold text-ink">{{ metric.label }}</td>
+  <td class="font-mono tabular-nums">{% if metric.raw_value != None %}{{ metric.raw_value|floatformat:2 }}{% else %}<span class="text-black/35" title="Unavailable">—</span>{% endif %}</td>
+  <td class="font-mono tabular-nums">{% if metric.percentile != None %}<span class="font-bold">{{ metric.percentile|floatformat:1 }}</span><span class="text-black/35">th</span>{% else %}<span class="text-black/35">—</span>{% endif %}</td>
+  <td class="font-mono text-black/55 tabular-nums">{{ metric.base_weight|floatformat:2 }}</td>
+  <td class="font-mono font-bold tabular-nums">{{ metric.effective_weight|floatformat:2 }}</td>
+</tr>

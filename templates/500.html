@@ -1,1 +1,32 @@
-{% extends 'base.html' %}{% block content %}<h1>Something went wrong</h1><p>The latest published rankings remain available once the service recovers.</p>{% endblock %}
+{% extends 'base.html' %}
+{% block content %}
+<section class="mx-auto flex min-h-[62vh] max-w-4xl items-center py-10 md:py-16">
+  <div class="grid w-full gap-10 lg:grid-cols-[1fr_auto] lg:items-end">
+    <div>
+      <p class="eyebrow">500 · Technical error</p>
+      <h1 class="max-w-3xl">The numbers are fine. This page isn't.</h1>
+      <p class="mt-5 max-w-xl text-lg leading-8 text-black/60">
+        Something went wrong while loading this request. Try again shortly, or return to the latest published rankings.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a class="button !mt-0" href="{% url 'ranking_index' %}">View rankings</a>
+        <a class="inline-flex items-center px-5 py-3 font-bold no-underline hover:text-accent-deep" href="{% url 'home' %}">Back to Merit →</a>
+      </div>
+      <p class="mt-8 border-l-2 border-accent pl-4 text-sm leading-6 text-black/45">
+        Published weekly snapshots remain versioned and reproducible independently of this page error.
+      </p>
+    </div>
+
+    <div class="hidden select-none lg:block" aria-hidden="true">
+      <div class="mb-5 flex items-end justify-end gap-2">
+        <span class="h-16 w-8 bg-ink"></span>
+        <span class="h-10 w-8 bg-ink"></span>
+        <span class="h-6 w-8 bg-accent"></span>
+        <span class="h-12 w-8 bg-ink"></span>
+        <span class="h-20 w-8 bg-ink"></span>
+      </div>
+      <p class="text-right font-mono text-8xl font-black tracking-[-0.08em] text-black/[0.07]">500</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

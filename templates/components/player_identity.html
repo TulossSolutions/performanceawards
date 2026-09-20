@@ -1,1 +1,4 @@
-<a href="{% url 'player_detail' player.slug %}"><strong>{{ player.name }}</strong></a>
+<a class="group inline-flex items-center gap-2 font-bold no-underline" href="{% url 'player_detail' player.slug %}">
+  <span class="transition-colors group-hover:text-accent-deep">{{ player.name }}</span>
+  <span class="translate-x-0 text-black/20 transition group-hover:translate-x-0.5 group-hover:text-accent-deep" aria-hidden="true">↗</span>
+</a>

@@ -17,8 +17,8 @@ pytestmark = pytest.mark.django_db
 def test_methodology_links_to_github():
     response = Client().get("/methodology/")
     assert response.status_code == 200
-    assert b'class="button" href="https://github.com/TulossSolutions/performanceawards"' in response.content
-    assert b"View source code and scoring formulas on GitHub" in response.content
+    assert b'href="https://github.com/TulossSolutions/performanceawards"' in response.content
+    assert b"View source on GitHub" in response.content
 
 @pytest.fixture
 def pipeline():
@@ -60,7 +60,8 @@ def test_home_shows_ranking_movement_next_to_score(pipeline):
     snapshot.entries.filter(pk=entry.pk).update(previous_rank=entry.rank+2,movement=2)
     cache.clear()
     content=Client().get("/").content
-    assert b">MERIT<" in content
+    assert b'images/merit_logo_icon.png' in content
+    assert b'images/merit_logo_text.png' in content
     assert b"No votes. Just performance." in content
     assert b'<meta name="description" content="No votes. Just performance.">' in content
     assert "Merit — No votes. Just performance.".encode() in content

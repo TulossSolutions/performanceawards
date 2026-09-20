@@ -1,1 +1,59 @@
-{% if different_positions %}<div class="notice">These scores are normalized within different position cohorts and are not directly comparable.</div>{% endif %}<div class="compare-grid">{% for row in rows %}<section class="card">{% if row %}<h2>{{ row.player.name }}</h2><p>#{{ row.rank }} · <strong class="score">{{ row.score|floatformat:2 }}</strong></p><p>{{ row.minutes }} minutes</p><dl>{% for key,metric in row.metric_breakdown.items %}<div><dt>{{ metric.label }}</dt><dd>{% if metric.raw_value %}{{ metric.raw_value|floatformat:2 }}{% else %}—{% endif %} · p{% if metric.percentile != None %}{{ metric.percentile|floatformat:1 }}{% else %}—{% endif %} · weight {{ metric.effective_weight|floatformat:2 }}</dd></div>{% endfor %}<div><dt>Average opponent Elo</dt><dd>{{ row.context_summary.average_opponent_elo|default_if_none:'—'|floatformat:1 }}</dd></div><div><dt>Average context factor</dt><dd>{{ row.context_summary.average_context_factor|default_if_none:'—'|floatformat:3 }}</dd></div></dl>{% else %}<p>Select a ranked player.</p>{% endif %}</section>{% endfor %}</div>
+{% if different_positions %}
+<div class="notice flex gap-3" role="note">
+  <span class="font-black text-accent-deep">Note</span>
+  <span>These scores are normalized within different position cohorts and are not directly comparable.</span>
+</div>
+{% endif %}
+
+<div class="compare-grid">
+  {% for row in rows %}
+  <section class="border border-black/10 bg-white p-5 sm:p-6">
+    {% if row %}
+      <header class="mb-5 flex items-start justify-between gap-4 border-b border-black/10 pb-5">
+        <div>
+          <p class="mb-2 text-[11px] font-black uppercase tracking-[0.14em] text-black/40">#{{ row.rank }} in position</p>
+          <h2>{{ row.player.name }}</h2>
+          <p class="mt-2 text-sm text-black/50">{{ row.minutes }} minutes</p>
+        </div>
+        <div class="text-right">
+          <span class="block text-[10px] font-black uppercase tracking-[0.14em] text-black/40">Merit score</span>
+          <strong class="mt-1 block font-mono text-4xl font-black tracking-[-0.05em]">{{ row.score|floatformat:2 }}</strong>
+        </div>
+      </header>
+
+      <div class="divide-y divide-black/10">
+        {% for key,metric in row.metric_breakdown.items %}
+        <div class="grid grid-cols-[1fr_auto] gap-4 py-3">
+          <dt class="font-bold text-ink">{{ metric.label }}</dt>
+          <dd class="text-right font-mono text-sm tabular-nums text-black/60">
+            {% if metric.raw_value != None %}{{ metric.raw_value|floatformat:2 }}{% else %}—{% endif %}
+            <span class="mx-1 text-black/20">·</span>
+            p{% if metric.percentile != None %}{{ metric.percentile|floatformat:1 }}{% else %}—{% endif %}
+            <span class="mx-1 text-black/20">·</span>
+            w{{ metric.effective_weight|floatformat:2 }}
+          </dd>
+        </div>
+        {% endfor %}
+      </div>
+
+      <dl class="mt-5 grid grid-cols-2 gap-3 border-t border-black/10 pt-5">
+        <div class="bg-paper p-3">
+          <dt class="text-[10px] font-black uppercase tracking-[0.12em] text-black/40">Opponent Elo</dt>
+          <dd class="mt-1 font-mono text-lg font-black">{{ row.context_summary.average_opponent_elo|default_if_none:'—'|floatformat:1 }}</dd>
+        </div>
+        <div class="bg-paper p-3">
+          <dt class="text-[10px] font-black uppercase tracking-[0.12em] text-black/40">Context factor</dt>
+          <dd class="mt-1 font-mono text-lg font-black">{{ row.context_summary.average_context_factor|default_if_none:'—'|floatformat:3 }}</dd>
+        </div>
+      </dl>
+    {% else %}
+      <div class="flex min-h-56 items-center justify-center text-center">
+        <div>
+          <p class="text-xs font-black uppercase tracking-[0.14em] text-black/35">Awaiting selection</p>
+          <p class="mt-2 text-black/55">Select a ranked player to compare.</p>
+        </div>
+      </div>
+    {% endif %}
+  </section>
+  {% endfor %}
+</div>

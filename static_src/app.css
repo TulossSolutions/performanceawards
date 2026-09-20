@@ -1,6 +1,230 @@
 @import "tailwindcss";
 @source "../templates/**/*.html";
 
-@theme { --color-ink: #101820; --color-accent: #e64a2e; --font-sans: Inter, ui-sans-serif, system-ui, sans-serif; }
-@layer base { body { @apply bg-[#f7f5f0] text-ink antialiased; } a { @apply underline-offset-4 hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent; } h1 { @apply text-4xl md:text-6xl font-black tracking-[-.04em]; } h2 { @apply text-2xl font-extrabold; } }
-@layer components { .shell { @apply max-w-6xl mx-auto px-4 py-10 md:px-8; } .header { @apply max-w-6xl mx-auto px-4 md:px-8 py-5 flex flex-wrap items-center justify-between gap-4 border-b border-black/15; } .header nav { @apply flex gap-5 text-sm font-bold; } .brand { @apply text-2xl font-black no-underline tracking-tight; } .brand span,.up { @apply text-accent; } .skip { @apply absolute -translate-y-full focus:translate-y-0 bg-white p-3 z-50; } .intro { @apply border-b-4 border-ink pb-7 mb-7; } .eyebrow { @apply uppercase tracking-[.2em] text-xs font-black text-accent mb-2; } .grid,.compare-grid { @apply grid md:grid-cols-2 gap-5; } .card { @apply bg-white border border-black/15 p-5 shadow-[4px_4px_0_#101820]; } .card ol { @apply mt-4 divide-y divide-black/10; } .card li { @apply py-3 flex justify-between gap-4; } .tabs { @apply flex overflow-x-auto gap-2 mb-6; } .tabs a { @apply whitespace-nowrap bg-white border border-black/20 px-4 py-2 font-bold no-underline hover:bg-ink hover:text-white; } .tabs a[aria-current=page] { @apply bg-ink text-white; } .table-wrap { @apply overflow-x-auto bg-white border border-black/15; } table { @apply min-w-full border-collapse; } th { @apply text-left uppercase tracking-wider text-xs bg-ink text-white; } th,td { @apply px-3 py-3 border-b border-black/10; } .rank { @apply font-black; } .score { @apply inline-block bg-accent text-white font-black px-2 py-1; } .down { @apply text-blue-700; } .empty,.notice { @apply p-6 border border-dashed border-black/30 bg-white; } .notice { @apply border-solid border-amber-500 bg-amber-50 mb-5; } .pagination { @apply flex justify-between py-4; } .player-head { @apply flex flex-col sm:flex-row sm:items-end justify-between gap-5 border-b-4 border-ink pb-7 mb-8; } .player-image { @apply size-24 rounded-full object-cover mb-3; } .hero-score { @apply text-right; } .hero-score span { @apply block font-bold; } .hero-score strong { @apply text-4xl; } .context-grid { @apply grid sm:grid-cols-2 lg:grid-cols-4 gap-3 my-4; } .context-grid div { @apply bg-white border border-black/15 p-3; } .context-grid dt { @apply text-xs uppercase font-bold; } .context-grid dd { @apply text-xl font-black; } .compare-form { @apply grid sm:grid-cols-[auto_1fr_auto_1fr_auto] items-end gap-3 my-5; } input,select { @apply bg-white border border-black/30 px-3 py-2 focus-visible:outline-2 focus-visible:outline-accent; } .prose { @apply max-w-3xl space-y-5; } .prose h2,.prose h3 { @apply mt-8; } .prose ul { @apply list-disc pl-6; } .method-note,.footer { @apply mt-10 pt-5 border-t border-black/20; } .footer { @apply max-w-6xl mx-auto px-4 md:px-8 pb-8 text-sm; } .button { @apply inline-block mt-5 bg-ink text-white px-4 py-3 font-bold no-underline; } .htmx-request { @apply opacity-60; } }
+@theme {
+  --color-ink: #111318;
+  --color-paper: #f4f2ec;
+  --color-accent: #c9a861;
+  --color-accent-deep: #9a7d38;
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+@layer base {
+  html {
+    @apply bg-paper;
+  }
+
+  body {
+    @apply bg-paper text-ink antialiased;
+  }
+
+  a {
+    @apply underline-offset-4 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent;
+  }
+
+  h1 {
+    @apply text-4xl font-black tracking-[-0.04em] md:text-6xl;
+  }
+
+  h2 {
+    @apply text-2xl font-extrabold tracking-[-0.025em];
+  }
+
+  ::selection {
+    @apply bg-accent text-ink;
+  }
+}
+
+@layer components {
+  /* Legacy/shared layout classes kept for the rest of the MVP templates. */
+  .shell {
+    @apply mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:px-10;
+  }
+
+  .header {
+    @apply mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 border-b border-black/10 px-5 py-5 sm:px-8 lg:px-10;
+  }
+
+  .header nav {
+    @apply flex gap-5 text-sm font-bold;
+  }
+
+  .brand {
+    @apply text-xl font-black tracking-[0.16em] no-underline;
+  }
+
+  .brand span,
+  .up {
+    @apply text-accent-deep;
+  }
+
+  .skip {
+    @apply absolute -translate-y-full bg-white p-3 z-50 focus:translate-y-0;
+  }
+
+  .intro {
+    @apply mb-8 border-b border-black/10 pb-8;
+  }
+
+  .eyebrow {
+    @apply mb-3 text-xs font-black uppercase tracking-[0.18em] text-accent-deep;
+  }
+
+  .grid,
+  .compare-grid {
+    @apply grid gap-5 md:grid-cols-2;
+  }
+
+  .card {
+    @apply border border-black/10 bg-white p-5 shadow-[0_1px_0_rgba(0,0,0,0.03)] transition duration-300;
+  }
+
+  .card:hover {
+    @apply -translate-y-0.5 shadow-xl shadow-black/5;
+  }
+
+  .card ol {
+    @apply mt-4 divide-y divide-black/10;
+  }
+
+  .card li {
+    @apply flex justify-between gap-4 py-3;
+  }
+
+  .tabs {
+    @apply mb-6 flex gap-2 overflow-x-auto;
+  }
+
+  .tabs a {
+    @apply whitespace-nowrap border border-black/15 bg-white px-4 py-2 text-sm font-bold no-underline hover:border-ink hover:bg-ink hover:text-white;
+  }
+
+  .tabs a[aria-current="page"] {
+    @apply border-ink bg-ink text-white;
+  }
+
+  .table-wrap {
+    @apply overflow-x-auto border border-black/10 bg-white;
+  }
+
+  table {
+    @apply min-w-full border-collapse;
+  }
+
+  th {
+    @apply bg-ink text-left text-xs font-black uppercase tracking-[0.12em] text-white;
+  }
+
+  th,
+  td {
+    @apply border-b border-black/10 px-3 py-3;
+  }
+
+  tbody tr {
+    @apply transition-colors hover:bg-black/[0.025];
+  }
+
+  .rank {
+    @apply font-black tabular-nums;
+  }
+
+  .score {
+    @apply inline-block bg-accent px-2.5 py-1 font-black tabular-nums text-ink;
+  }
+
+  .down {
+    @apply text-blue-700;
+  }
+
+  .empty,
+  .notice {
+    @apply border border-dashed border-black/25 bg-white p-6;
+  }
+
+  .notice {
+    @apply mb-5 border-solid border-accent bg-[#fbf6e8];
+  }
+
+  .pagination {
+    @apply flex justify-between gap-4 py-5;
+  }
+
+  .pagination a {
+    @apply font-bold;
+  }
+
+  .player-head {
+    @apply mb-8 flex flex-col justify-between gap-5 border-b border-black/10 pb-8 sm:flex-row sm:items-end;
+  }
+
+  .player-image {
+    @apply mb-3 size-24 rounded-full border border-black/10 object-cover;
+  }
+
+  .hero-score {
+    @apply text-left sm:text-right;
+  }
+
+  .hero-score span {
+    @apply block text-xs font-bold uppercase tracking-[0.14em] text-black/45;
+  }
+
+  .hero-score strong {
+    @apply font-mono text-4xl font-black tabular-nums tracking-[-0.04em];
+  }
+
+  .context-grid {
+    @apply my-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4;
+  }
+
+  .context-grid div {
+    @apply border border-black/10 bg-white p-4;
+  }
+
+  .context-grid dt {
+    @apply text-[11px] font-black uppercase tracking-[0.14em] text-black/45;
+  }
+
+  .context-grid dd {
+    @apply mt-1 text-xl font-black tabular-nums;
+  }
+
+  .compare-form {
+    @apply my-5 grid items-end gap-3 sm:grid-cols-[auto_1fr_auto_1fr_auto];
+  }
+
+  input,
+  select {
+    @apply border border-black/20 bg-white px-3 py-2.5 focus-visible:border-accent focus-visible:outline-2 focus-visible:outline-accent;
+  }
+
+  .prose {
+    @apply max-w-3xl space-y-5 leading-7 text-black/75;
+  }
+
+  .prose h2,
+  .prose h3 {
+    @apply mt-9 text-ink;
+  }
+
+  .prose ul {
+    @apply list-disc pl-6;
+  }
+
+  .method-note,
+  .footer {
+    @apply mt-10 border-t border-black/15 pt-5;
+  }
+
+  .footer {
+    @apply mx-auto max-w-7xl px-5 pb-8 text-sm sm:px-8 lg:px-10;
+  }
+
+  .button {
+    @apply mt-5 inline-block bg-ink px-5 py-3 font-bold text-white no-underline hover:bg-accent hover:text-ink;
+  }
+
+  .htmx-request {
+    @apply opacity-60;
+  }
+}

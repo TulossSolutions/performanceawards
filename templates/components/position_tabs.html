@@ -1,1 +1,11 @@
-<nav class="tabs" aria-label="Positions">{% for slug,label in tabs %}<a href="{% url 'ranking' slug %}" {% if slug == position_slug %}aria-current="page"{% endif %} hx-get="{% url 'ranking' slug %}" hx-target="#ranking-region" hx-push-url="true">{{ label }}</a>{% endfor %}</nav>
+<nav class="tabs border-b border-black/10 pb-3" aria-label="Positions">
+  {% for slug,label in tabs %}
+  <a href="{% url 'ranking' slug %}"
+     {% if slug == position_slug %}aria-current="page"{% endif %}
+     hx-get="{% url 'ranking' slug %}"
+     hx-target="#ranking-region"
+     hx-push-url="true">
+    {{ label }}
+  </a>
+  {% endfor %}
+</nav>

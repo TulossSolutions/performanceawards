@@ -1,1 +1,69 @@
-{% load static %}<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{ page_title|default:'Merit' }}</title><meta name="description" content="No votes. Just performance."><link rel="canonical" href="{{ request.build_absolute_uri }}"><meta property="og:title" content="{{ page_title|default:'Merit' }}"><meta property="og:description" content="No votes. Just performance."><link rel="stylesheet" href="{% static 'dist/app.css' %}"><script src="{% static 'js/htmx.min.js' %}" defer></script></head><body><a class="skip" href="#main">Skip to content</a>{% include 'components/header.html' %}<main id="main" class="shell">{% block content %}{% endblock %}</main><footer class="footer">Explicit inputs. Consistent rules. Reproducible results.</footer></body></html>
+{% load static %}
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ page_title|default:'Merit' }}</title>
+  <meta name="description" content="No votes. Just performance.">
+  <link rel="canonical" href="{{ request.build_absolute_uri }}">
+  <meta property="og:title" content="{{ page_title|default:'Merit' }}">
+  <meta property="og:description" content="No votes. Just performance.">
+  <link rel="stylesheet" href="{% static 'dist/app.css' %}">
+  <script src="{% static 'js/htmx.min.js' %}" defer></script>
+</head>
+<body class="min-h-screen bg-[#f4f2ec] text-[#111318] antialiased selection:bg-[#c9a861] selection:text-[#111318]">
+  <a
+    class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:shadow-lg"
+    href="#main"
+  >Skip to content</a>
+
+  <header class="sticky top-0 z-40 border-b border-black/10 bg-[#f4f2ec]/90 backdrop-blur-xl">
+    <div class="relative mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8 lg:px-10">
+      <a href="{% url 'home' %}" class="group flex items-center gap-3" aria-label="Merit home">
+        <img src="{% static 'images/merit_logo_icon.png' %}" alt="" class="h-9 w-9 object-contain">
+        <img src="{% static 'images/merit_logo_text.png' %}" alt="Merit" class="h-6 w-auto">
+      </a>
+
+      <nav class="hidden items-center gap-5 text-sm font-semibold xl:flex" aria-label="Primary navigation">
+        <a class="transition hover:text-black/55" href="{% url 'ranking' 'attackers' %}">Attackers</a>
+        <a class="transition hover:text-black/55" href="{% url 'ranking' 'midfielders' %}">Midfielders</a>
+        <a class="transition hover:text-black/55" href="{% url 'ranking' 'defenders' %}">Defenders</a>
+        <a class="transition hover:text-black/55" href="{% url 'ranking' 'goalkeepers' %}">Goalkeepers</a>
+        <a class="transition hover:text-black/55" href="{% url 'compare' %}">Compare</a>
+        <a class="rounded-full border border-black/15 px-4 py-2 transition hover:border-black hover:bg-black hover:text-white" href="{% url 'methodology' %}">Methodology</a>
+        <a class="transition hover:text-black/55" href="{% url 'roadmap' %}">Roadmap</a>
+        <a class="transition hover:text-black/55" href="{% url 'manifesto' %}">Manifesto</a>
+      </nav>
+
+      <details class="xl:hidden">
+        <summary class="cursor-pointer rounded-full bg-[#111318] px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white">Menu</summary>
+        <nav class="absolute left-0 right-0 top-full flex flex-col gap-4 border-b border-black/10 bg-[#f4f2ec] px-5 py-5 text-sm font-semibold shadow-lg sm:px-8 lg:px-10" aria-label="Mobile navigation">
+          <a href="{% url 'ranking' 'attackers' %}">Attackers</a>
+          <a href="{% url 'ranking' 'midfielders' %}">Midfielders</a>
+          <a href="{% url 'ranking' 'defenders' %}">Defenders</a>
+          <a href="{% url 'ranking' 'goalkeepers' %}">Goalkeepers</a>
+          <a href="{% url 'compare' %}">Compare</a>
+          <a href="{% url 'methodology' %}">Methodology</a>
+          <a href="{% url 'roadmap' %}">Roadmap</a>
+          <a href="{% url 'manifesto' %}">Manifesto</a>
+        </nav>
+      </details>
+    </div>
+  </header>
+
+  <main id="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="mt-20 border-t border-black/10 bg-[#111318] text-white">
+    <div class="mx-auto flex max-w-7xl flex-col gap-6 px-5 py-10 sm:px-8 md:flex-row md:items-end md:justify-between lg:px-10">
+      <div>
+        <div class="mb-3 flex items-center gap-2 text-sm font-black tracking-[0.2em]">MERIT</div>
+        <p class="max-w-xl text-sm leading-6 text-white/60">Explicit inputs. Consistent rules. Reproducible results.</p>
+      </div>
+      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#c9a861]">No votes. Just performance.</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,1 +1,18 @@
-<header class="header"><a class="brand" href="{% url 'home' %}">MERIT</a><nav aria-label="Main navigation"><a href="{% url 'ranking_index' %}">Rankings</a><a href="{% url 'compare' %}">Compare</a><a href="{% url 'methodology' %}">Methodology</a><a href="{% url 'roadmap' %}">Roadmap</a><a href="{% url 'manifesto' %}">Manifesto</a></nav></header>
+<header class="header">
+  <a class="brand group flex items-center gap-3" href="{% url 'home' %}" aria-label="Merit home">
+    <svg class="h-7 w-7 shrink-0" viewBox="0 0 64 64" aria-hidden="true">
+      <path d="M5 52V11l11 8v33H5Zm17 0V30l10 7v15H22Z" fill="currentColor"/>
+      <path d="M32 52V31l5-4 5 4v21H32Z" fill="#c9a861"/>
+      <path d="M48 52V30l11-8v30H48Z" fill="currentColor"/>
+    </svg>
+    <span class="text-ink transition-colors group-hover:text-accent-deep">MERIT</span>
+  </a>
+
+  <nav aria-label="Main navigation" class="overflow-x-auto">
+    <a href="{% url 'ranking_index' %}">Rankings</a>
+    <a href="{% url 'compare' %}">Compare</a>
+    <a href="{% url 'methodology' %}">Methodology</a>
+    <a href="{% url 'roadmap' %}">Roadmap</a>
+    <a href="{% url 'manifesto' %}">Manifesto</a>
+  </nav>
+</header>
