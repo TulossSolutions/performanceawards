@@ -3,228 +3,124 @@
 
 @theme {
   --color-ink: #111318;
-  --color-paper: #f4f2ec;
-  --color-accent: #c9a861;
-  --color-accent-deep: #9a7d38;
+  --color-muted: #6b7280;
+  --color-line: #e5e7eb;
+  --color-soft: #f8f9fa;
+  --color-accent: #c6a252;
   --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 @layer base {
-  html {
-    @apply bg-paper;
-  }
-
-  body {
-    @apply bg-paper text-ink antialiased;
-  }
-
-  a {
-    @apply underline-offset-4 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent;
-  }
-
-  h1 {
-    @apply text-4xl font-black tracking-[-0.04em] md:text-6xl;
-  }
-
-  h2 {
-    @apply text-2xl font-extrabold tracking-[-0.025em];
-  }
-
-  ::selection {
-    @apply bg-accent text-ink;
-  }
+  * { box-sizing: border-box; }
+  html { @apply bg-white; }
+  body { @apply m-0 bg-white text-ink antialiased; }
+  a { @apply underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent; }
+  h1,h2,h3,p,dl,dd { @apply m-0; }
+  h1 { @apply text-[clamp(2rem,4vw,3.5rem)] font-black tracking-[-.045em] leading-[.98]; }
+  h2 { @apply text-2xl md:text-3xl font-black tracking-[-.03em] leading-tight; }
+  h3 { @apply text-xl font-black tracking-[-.02em]; }
 }
 
 @layer components {
-  /* Legacy/shared layout classes kept for the rest of the MVP templates. */
-  .shell {
-    @apply mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:px-10;
-  }
+  .shell { @apply max-w-6xl mx-auto px-4 md:px-8 py-8 md:py-12; }
 
-  .header {
-    @apply mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 border-b border-black/10 px-5 py-5 sm:px-8 lg:px-10;
-  }
+  .header { @apply sticky top-0 z-40 bg-white/95 backdrop-blur max-w-full border-b border-line; }
+  .header { padding-left: max(1rem, calc((100vw - 72rem)/2 + 2rem)); padding-right: max(1rem, calc((100vw - 72rem)/2 + 2rem)); }
+  .header { @apply py-3 flex flex-wrap items-center justify-between gap-4; }
+  .header nav { @apply flex flex-wrap items-center gap-x-5 gap-y-2 text-xs md:text-sm font-semibold; }
+  .header nav a { @apply no-underline text-ink/70 hover:text-ink; }
+  .brand { @apply inline-flex items-center gap-2 text-lg md:text-xl font-black no-underline tracking-[.22em]; }
+  .brand span,.up { @apply text-accent; }
+  .skip { @apply absolute -translate-y-full focus:translate-y-0 bg-white border border-line px-4 py-3 z-50; }
 
-  .header nav {
-    @apply flex gap-5 text-sm font-bold;
-  }
+  .home-intro { @apply grid lg:grid-cols-[1fr_auto] gap-6 items-end border-b border-line pb-7 mb-9; }
+  .home-deck { @apply mt-3 max-w-2xl text-sm md:text-base leading-7 text-muted; }
+  .eyebrow { @apply uppercase tracking-[.18em] text-[10px] md:text-[11px] font-black text-accent mb-2; }
 
-  .brand {
-    @apply text-xl font-black tracking-[0.16em] no-underline;
-  }
+  .snapshot-meta { @apply grid grid-cols-3 gap-5 min-w-[18rem] text-right; }
+  .snapshot-meta dt { @apply uppercase tracking-[.14em] text-[9px] font-black text-muted; }
+  .snapshot-meta dd { @apply mt-1 text-sm font-bold whitespace-nowrap; }
 
-  .brand span,
-  .up {
-    @apply text-accent-deep;
-  }
+  .section-heading { @apply flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-5; }
+  .section-heading > p { @apply max-w-md text-sm leading-6 text-muted; }
 
-  .skip {
-    @apply absolute -translate-y-full bg-white p-3 z-50 focus:translate-y-0;
-  }
+  .ranking-grid { @apply grid md:grid-cols-2 gap-px bg-line border border-line; }
+  .ranking-card { @apply bg-white p-5 md:p-6; }
+  .ranking-card-head { @apply flex items-start justify-between gap-4 pb-4 border-b border-line; }
+  .card-kicker { @apply uppercase tracking-[.16em] text-[9px] font-black text-muted mb-1; }
+  .top-label { @apply rounded-full border border-line px-2.5 py-1 text-[9px] font-bold uppercase tracking-[.12em] text-muted; }
 
-  .intro {
-    @apply mb-8 border-b border-black/10 pb-8;
-  }
+  .leader-list { @apply list-none m-0 p-0 divide-y divide-line; }
+  .leader-list li { @apply grid grid-cols-[2rem_1fr_auto] items-center gap-3 py-3.5; }
+  .rank-pill { @apply size-8 rounded-full bg-ink text-white grid place-items-center text-xs font-black; }
+  .rank-pill.is-first { @apply bg-accent text-ink; }
+  .leader-player { @apply min-w-0; }
+  .leader-player a { @apply block truncate no-underline font-bold text-sm hover:underline; }
+  .leader-player span { @apply block mt-0.5 uppercase tracking-[.12em] text-[8px] font-bold text-muted; }
+  .leader-score { @apply flex items-baseline gap-2 text-right; }
+  .leader-score strong { @apply tabular-nums text-base md:text-lg font-black tracking-tight; }
+  .leader-score span { @apply text-[10px] font-black tabular-nums; }
+  .ranking-link { @apply inline-flex items-center gap-2 mt-4 text-xs font-black no-underline hover:underline; }
+  .compact-empty { @apply py-8 text-sm text-muted; }
 
-  .eyebrow {
-    @apply mb-3 text-xs font-black uppercase tracking-[0.18em] text-accent-deep;
-  }
+  .method-strip { @apply mt-10 border-y border-line py-7 grid md:grid-cols-2 gap-6 md:gap-10; }
+  .method-strip h2 { @apply max-w-md text-xl md:text-2xl; }
+  .method-strip > div:last-child { @apply md:border-l md:border-line md:pl-10; }
+  .method-strip p { @apply text-sm leading-6 text-muted; }
+  .method-strip a { @apply inline-flex mt-4 text-xs font-black no-underline hover:underline; }
 
-  .grid,
-  .compare-grid {
-    @apply grid gap-5 md:grid-cols-2;
-  }
+  /* Shared layout retained for the rest of the site */
+  .intro { @apply border-b border-line pb-6 mb-7; }
+  .grid,.compare-grid { @apply grid md:grid-cols-2 gap-4; }
+  .card { @apply bg-white border border-line p-5; }
+  .card ol { @apply mt-4 divide-y divide-line; }
+  .card li { @apply py-3 flex justify-between gap-4; }
 
-  .card {
-    @apply border border-black/10 bg-white p-5 shadow-[0_1px_0_rgba(0,0,0,0.03)] transition duration-300;
-  }
+  .tabs { @apply flex overflow-x-auto gap-1 border-b border-line mb-6; }
+  .tabs a { @apply whitespace-nowrap px-3 py-2.5 text-xs font-bold no-underline text-muted border-b-2 border-transparent hover:text-ink; }
+  .tabs a[aria-current=page] { @apply text-ink border-accent; }
 
-  .card:hover {
-    @apply -translate-y-0.5 shadow-xl shadow-black/5;
-  }
+  .table-wrap { @apply overflow-x-auto bg-white border-y border-line; }
+  table { @apply min-w-full border-collapse text-sm; }
+  th { @apply text-left uppercase tracking-[.12em] text-[9px] text-muted bg-soft; }
+  th,td { @apply px-3 py-3 border-b border-line; }
+  tbody tr:hover { @apply bg-soft/70; }
+  .rank { @apply font-black tabular-nums; }
+  .score { @apply inline-block text-ink font-black tabular-nums; }
+  .down { @apply text-blue-700; }
 
-  .card ol {
-    @apply mt-4 divide-y divide-black/10;
-  }
+  .empty,.notice { @apply p-5 border border-line bg-soft text-sm; }
+  .notice { @apply mb-5; }
+  .pagination { @apply flex justify-between items-center gap-4 py-4 text-sm; }
 
-  .card li {
-    @apply flex justify-between gap-4 py-3;
-  }
+  .player-head { @apply flex flex-col sm:flex-row sm:items-end justify-between gap-5 border-b border-line pb-7 mb-8; }
+  .player-image { @apply size-24 rounded-full object-cover mb-3; }
+  .hero-score { @apply text-left sm:text-right; }
+  .hero-score span { @apply block text-xs font-bold text-muted; }
+  .hero-score strong { @apply text-4xl md:text-5xl font-black tabular-nums; }
 
-  .tabs {
-    @apply mb-6 flex gap-2 overflow-x-auto;
-  }
+  .context-grid { @apply grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-line border border-line my-4; }
+  .context-grid div { @apply bg-white p-4; }
+  .context-grid dt { @apply text-[9px] uppercase tracking-[.12em] font-bold text-muted; }
+  .context-grid dd { @apply mt-1 text-xl font-black tabular-nums; }
 
-  .tabs a {
-    @apply whitespace-nowrap border border-black/15 bg-white px-4 py-2 text-sm font-bold no-underline hover:border-ink hover:bg-ink hover:text-white;
-  }
+  .compare-form { @apply grid sm:grid-cols-[auto_1fr_auto_1fr_auto] items-end gap-3 my-5; }
+  input,select { @apply bg-white border border-line px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-accent; }
+  .prose { @apply max-w-3xl space-y-5 leading-7; }
+  .prose h2,.prose h3 { @apply mt-8; }
+  .prose ul { @apply list-disc pl-6; }
 
-  .tabs a[aria-current="page"] {
-    @apply border-ink bg-ink text-white;
-  }
+  .method-note { @apply mt-10 pt-5 border-t border-line text-sm text-muted; }
+  .footer { @apply max-w-6xl mx-auto px-4 md:px-8 py-7 border-t border-line text-xs text-muted flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3; }
+  .footer > div { @apply flex items-center gap-3; }
+  .footer strong { @apply text-ink tracking-[.18em]; }
+  .footer span { @apply text-muted; }
 
-  .table-wrap {
-    @apply overflow-x-auto border border-black/10 bg-white;
-  }
+  .button { @apply inline-flex items-center justify-center bg-ink text-white px-4 py-2.5 text-sm font-bold no-underline hover:bg-black; }
+  .htmx-request { @apply opacity-60; }
+}
 
-  table {
-    @apply min-w-full border-collapse;
-  }
-
-  th {
-    @apply bg-ink text-left text-xs font-black uppercase tracking-[0.12em] text-white;
-  }
-
-  th,
-  td {
-    @apply border-b border-black/10 px-3 py-3;
-  }
-
-  tbody tr {
-    @apply transition-colors hover:bg-black/[0.025];
-  }
-
-  .rank {
-    @apply font-black tabular-nums;
-  }
-
-  .score {
-    @apply inline-block bg-accent px-2.5 py-1 font-black tabular-nums text-ink;
-  }
-
-  .down {
-    @apply text-blue-700;
-  }
-
-  .empty,
-  .notice {
-    @apply border border-dashed border-black/25 bg-white p-6;
-  }
-
-  .notice {
-    @apply mb-5 border-solid border-accent bg-[#fbf6e8];
-  }
-
-  .pagination {
-    @apply flex justify-between gap-4 py-5;
-  }
-
-  .pagination a {
-    @apply font-bold;
-  }
-
-  .player-head {
-    @apply mb-8 flex flex-col justify-between gap-5 border-b border-black/10 pb-8 sm:flex-row sm:items-end;
-  }
-
-  .player-image {
-    @apply mb-3 size-24 rounded-full border border-black/10 object-cover;
-  }
-
-  .hero-score {
-    @apply text-left sm:text-right;
-  }
-
-  .hero-score span {
-    @apply block text-xs font-bold uppercase tracking-[0.14em] text-black/45;
-  }
-
-  .hero-score strong {
-    @apply font-mono text-4xl font-black tabular-nums tracking-[-0.04em];
-  }
-
-  .context-grid {
-    @apply my-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4;
-  }
-
-  .context-grid div {
-    @apply border border-black/10 bg-white p-4;
-  }
-
-  .context-grid dt {
-    @apply text-[11px] font-black uppercase tracking-[0.14em] text-black/45;
-  }
-
-  .context-grid dd {
-    @apply mt-1 text-xl font-black tabular-nums;
-  }
-
-  .compare-form {
-    @apply my-5 grid items-end gap-3 sm:grid-cols-[auto_1fr_auto_1fr_auto];
-  }
-
-  input,
-  select {
-    @apply border border-black/20 bg-white px-3 py-2.5 focus-visible:border-accent focus-visible:outline-2 focus-visible:outline-accent;
-  }
-
-  .prose {
-    @apply max-w-3xl space-y-5 leading-7 text-black/75;
-  }
-
-  .prose h2,
-  .prose h3 {
-    @apply mt-9 text-ink;
-  }
-
-  .prose ul {
-    @apply list-disc pl-6;
-  }
-
-  .method-note,
-  .footer {
-    @apply mt-10 border-t border-black/15 pt-5;
-  }
-
-  .footer {
-    @apply mx-auto max-w-7xl px-5 pb-8 text-sm sm:px-8 lg:px-10;
-  }
-
-  .button {
-    @apply mt-5 inline-block bg-ink px-5 py-3 font-bold text-white no-underline hover:bg-accent hover:text-ink;
-  }
-
-  .htmx-request {
-    @apply opacity-60;
-  }
+@media (max-width: 767px) {
+  .snapshot-meta { @apply min-w-0 text-left; }
+  .ranking-grid { @apply grid-cols-1; }
 }
