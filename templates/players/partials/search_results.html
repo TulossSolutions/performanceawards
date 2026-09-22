@@ -1,14 +1,5 @@
-{% if players %}
-<ul class="absolute z-20 mt-1 w-full divide-y divide-black/10 border border-black/10 bg-white shadow-xl shadow-black/10">
+<ul class="mt-1 border border-line bg-white divide-y divide-line">
   {% for player in players %}
-  <li>
-    <a class="flex items-center justify-between gap-4 px-4 py-3 no-underline hover:bg-paper hover:text-ink" href="{% url 'player_detail' player.slug %}">
-      <strong>{{ player.name }}</strong>
-      <span class="text-[10px] font-black uppercase tracking-[0.12em] text-black/40">{{ player.get_primary_position_display }}</span>
-    </a>
-  </li>
-  {% endfor %}
+  <li><a class="flex items-center justify-between gap-4 px-3 py-2.5 no-underline hover:bg-soft" href="{% url 'player_detail' player.slug %}"><strong class="text-sm">{{ player.name }}</strong><span class="text-xs text-muted">{{ player.get_primary_position_display }}</span></a></li>
+  {% empty %}<li class="px-3 py-3 text-sm text-muted">No matching players.</li>{% endfor %}
 </ul>
-{% else %}
-<div class="absolute z-20 mt-1 w-full border border-black/10 bg-white px-4 py-3 text-sm text-black/50 shadow-xl shadow-black/10">No matching players.</div>
-{% endif %}

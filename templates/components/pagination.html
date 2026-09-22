@@ -1,7 +1,7 @@
 {% if page.has_other_pages %}
-<nav class="pagination items-center border-t border-black/10" aria-label="Pagination">
-  <div>{% if page.has_previous %}<a class="inline-flex items-center gap-2 no-underline hover:text-accent-deep" href="?page={{ page.previous_page_number }}{% if snapshot %}&amp;season={{ snapshot.season.slug }}{% endif %}"><span aria-hidden="true">←</span> Previous</a>{% endif %}</div>
-  <span class="text-xs font-black uppercase tracking-[0.12em] text-black/45">Page {{ page.number }} / {{ page.paginator.num_pages }}</span>
-  <div>{% if page.has_next %}<a class="inline-flex items-center gap-2 no-underline hover:text-accent-deep" href="?page={{ page.next_page_number }}{% if snapshot %}&amp;season={{ snapshot.season.slug }}{% endif %}">Next <span aria-hidden="true">→</span></a>{% endif %}</div>
+<nav class="pagination" aria-label="Pagination">
+  <div>{% if page.has_previous %}<a class="font-bold no-underline hover:underline" href="?page={{ page.previous_page_number }}{% if snapshot %}&amp;season={{ snapshot.season.slug }}{% endif %}">← Previous</a>{% endif %}</div>
+  <span class="text-xs text-muted">Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+  <div>{% if page.has_next %}<a class="font-bold no-underline hover:underline" href="?page={{ page.next_page_number }}{% if snapshot %}&amp;season={{ snapshot.season.slug }}{% endif %}">Next →</a>{% endif %}</div>
 </nav>
 {% endif %}

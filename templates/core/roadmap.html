@@ -1,60 +1,54 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="mx-auto max-w-7xl px-5 pb-8 pt-14 sm:px-8 lg:px-10 lg:pt-20">
-  <div class="max-w-3xl">
-    <p class="mb-4 text-xs font-black uppercase tracking-[0.2em] text-[#9a7d38]">Beyond the MVP</p>
-    <h1>Public roadmap</h1>
-    <p class="mt-5 max-w-2xl text-base leading-7 text-black/60 sm:text-lg">Future candidates, not delivery commitments. Merit grows only where more data or features make the ranking more useful, explainable or complete.</p>
-  </div>
+<section class="intro">
+  <p class="eyebrow">Beyond the MVP</p>
+  <h1>Public roadmap</h1>
+  <p class="home-deck">Future candidates, not delivery commitments. Priority remains better data, better methodology and clearer rankings.</p>
 </section>
 
-<section class="mx-auto max-w-7xl px-5 py-8 sm:px-8 lg:px-10">
-  <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-    <article class="border border-black/10 bg-white p-6">
-      <p class="text-xs font-black uppercase tracking-[0.18em] text-[#9a7d38]">Scoring depth</p>
-      <ul class="mt-5 space-y-3 text-sm leading-6 text-black/65">
-        <li>DM, CM, AM, CB, FB and WB sub-position scoring</li>
-        <li>Expected goals and expected assists enrichment</li>
-        <li>Post-shot expected goals and goals-prevented goalkeeper metrics</li>
-        <li>Possession-adjusted defensive statistics</li>
-        <li>Yellow and red card impact on scores</li>
-      </ul>
-    </article>
-
-    <article class="border border-black/10 bg-white p-6">
-      <p class="text-xs font-black uppercase tracking-[0.18em] text-[#9a7d38]">Coverage</p>
-      <ul class="mt-5 space-y-3 text-sm leading-6 text-black/65">
-        <li>Domestic cup support</li>
-        <li>World Cup, Euros, Copa América and AFCON support</li>
-        <li>Women's rankings</li>
-        <li>Coach rankings</li>
-        <li>Historical season backfill</li>
-      </ul>
-    </article>
-
-    <article class="border border-black/10 bg-white p-6">
-      <p class="text-xs font-black uppercase tracking-[0.18em] text-[#9a7d38]">Product</p>
-      <ul class="mt-5 space-y-3 text-sm leading-6 text-black/65">
-        <li>Shareable score cards and images</li>
-        <li>Team pages</li>
-        <li>Weekly movers editorial page</li>
-        <li>Public JSON API</li>
-        <li>Formula sandbox and ranking-model backtesting interface</li>
-      </ul>
-    </article>
-
-    <article class="border border-black/10 bg-[#111318] p-6 text-white md:col-span-2 lg:col-span-3">
-      <div class="grid gap-5 md:grid-cols-[1fr_2fr] md:items-start">
-        <div>
-          <p class="text-xs font-black uppercase tracking-[0.18em] text-[#c9a861]">Infrastructure</p>
-          <h2 class="mt-2 text-2xl text-white">Provider independence</h2>
-        </div>
-        <ul class="grid gap-3 text-sm leading-6 text-white/65 sm:grid-cols-2">
-          <li>Sportmonks runtime adapter</li>
-          <li>Webhooks and additional runtime provider adapters</li>
-        </ul>
-      </div>
-    </article>
-  </div>
-</section>
+<div class="grid md:grid-cols-2 gap-px bg-line border border-line">
+  <section class="bg-white p-6">
+    <p class="eyebrow">Scoring depth</p>
+    <h2>Better role context</h2>
+    <ul class="mt-4 space-y-2 text-sm leading-6 text-muted">
+      <li>DM, CM, AM, CB, FB, and WB sub-position scoring</li>
+      <li>Post-shot expected goals and goalkeeper goals prevented</li>
+      <li>Expected goals and expected assists enrichment</li>
+      <li>Possession-adjusted defensive statistics</li>
+      <li>Yellow and red card impact on scores</li>
+    </ul>
+  </section>
+  <section class="bg-white p-6">
+    <p class="eyebrow">Coverage</p>
+    <h2>More competitions</h2>
+    <ul class="mt-4 space-y-2 text-sm leading-6 text-muted">
+      <li>Domestic cup support</li>
+      <li>World Cup, Euros, Copa América, and AFCON</li>
+      <li>Women's rankings</li>
+      <li>Coach rankings</li>
+      <li>Historical season backfill</li>
+    </ul>
+  </section>
+  <section class="bg-white p-6">
+    <p class="eyebrow">Product</p>
+    <h2>Deeper exploration</h2>
+    <ul class="mt-4 space-y-2 text-sm leading-6 text-muted">
+      <li>Shareable score cards and images</li>
+      <li>Team pages</li>
+      <li>Weekly movers editorial page</li>
+      <li>Ranking-model backtesting interface</li>
+      <li>Formula sandbox</li>
+    </ul>
+  </section>
+  <section class="bg-white p-6">
+    <p class="eyebrow">Infrastructure</p>
+    <h2>Open and portable</h2>
+    <ul class="mt-4 space-y-2 text-sm leading-6 text-muted">
+      <li>Public JSON API</li>
+      <li>Sportmonks runtime adapter</li>
+      <li>Webhooks</li>
+      <li>Additional runtime provider adapters</li>
+    </ul>
+  </section>
+</div>
 {% endblock %}

@@ -1,58 +1,40 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="shell">
 <section class="player-head">
-  <div class="flex items-start gap-5">
-    {% if player.image_url %}<img class="player-image !mb-0" src="{{ player.image_url }}" alt="{{ player.name }}">{% endif %}
+  <div class="flex items-start gap-4">
+    {% if player.image_url %}<img class="player-image" src="{{ player.image_url }}" alt="{{ player.name }}">{% endif %}
     <div>
       <p class="eyebrow">{{ player.get_primary_position_display }}</p>
       <h1>{{ player.name }}</h1>
-      <p class="mt-2 text-black/60">{{ entry.team.name|default:'Team unavailable' }}{% if player.nationality_code %} · {{ player.nationality_code }}{% endif %}</p>
-      <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-black/55">
-        {% if entry %}<span class="font-bold text-ink">{% include 'components/movement.html' %}</span>{% endif %}
-        <span><strong class="font-mono text-ink">{{ score.minutes|default:0 }}</strong> minutes</span>
-        <span><strong class="font-mono text-ink">{{ score.appearances|default:0 }}</strong> appearances</span>
-      </div>
+      <p class="mt-2 text-sm text-muted">{{ entry.team.name|default:'Team unavailable' }}{% if player.nationality_code %} · {{ player.nationality_code }}{% endif %}</p>
+      <p class="mt-2 text-xs text-muted">{% if entry %}{% include 'components/movement.html' %} · {% endif %}{{ score.minutes|default:0 }} minutes · {{ score.appearances|default:0 }} appearances</p>
     </div>
   </div>
   {% if entry %}
-  <div class="min-w-44 border-l-2 border-accent pl-5 text-left sm:text-right">
-    <span class="block text-[11px] font-black uppercase tracking-[0.16em] text-black/40">Current rank</span>
-    <div class="mt-1 flex items-baseline gap-4 sm:justify-end">
-      <span class="font-mono text-2xl font-black">#{{ entry.rank }}</span>
-      <strong class="font-mono text-5xl font-black tracking-[-0.05em]">{{ entry.score|floatformat:2 }}</strong>
-    </div>
-    <span class="mt-1 block text-[11px] uppercase tracking-[0.14em] text-black/40">Merit score</span>
+  <div class="hero-score">
+    <span>Rank #{{ entry.rank }}</span>
+    <strong>{{ entry.score|floatformat:2 }}</strong>
+    <span>Merit score</span>
   </div>
   {% endif %}
 </section>
 
 {% if score and score.eligible %}
-<section class="mb-12">
-  <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
-    <div>
-      <p class="eyebrow">Why this rank?</p>
-      <h2>Score breakdown</h2>
-    </div>
-    <p class="text-xs font-bold uppercase tracking-[0.12em] text-black/40">Formula v{{ score.formula.version }}</p>
+<section>
+  <div class="section-heading">
+    <div><p class="eyebrow">Why this rank?</p><h2>Score breakdown</h2></div>
+    <p>Formula v{{ score.formula.version }}</p>
   </div>
-
   <div class="table-wrap">
     <table>
-      <thead><tr>
-        <th scope="col">Metric</th>
-        <th scope="col"><abbr title="The player's season-to-date metric value, usually normalized per 90 minutes where stated.">Value</abbr></th>
-        <th scope="col"><abbr title="Position-relative score from 0 to 100; higher is better after accounting for metric direction.">Percentile</abbr></th>
-        <th scope="col"><abbr title="The metric's original share of the formula before coverage adjustments; 0.30 means 30%.">Base weight</abbr></th>
-        <th scope="col"><abbr title="The metric's share after unavailable metrics are excluded and the remaining weights are redistributed; 0.30 means 30%.">Effective weight</abbr></th>
-      </tr></thead>
+      <thead><tr><th scope="col">Metric</th><th scope="col"><abbr title="The player's season-to-date metric value, usually normalized per 90 minutes where stated.">Value</abbr></th><th scope="col"><abbr title="Position-relative score from 0 to 100; higher is better after accounting for metric direction.">Percentile</abbr></th><th scope="col"><abbr title="The metric's original share of the formula before coverage adjustments; 0.30 means 30%.">Base weight</abbr></th><th scope="col"><abbr title="The metric's share after unavailable metrics are excluded and the remaining weights are redistributed; 0.30 means 30%.">Effective weight</abbr></th></tr></thead>
       <tbody>{% for key,metric in score.metric_breakdown.items %}{% include 'components/metric_breakdown_row.html' with metric=metric %}{% endfor %}</tbody>
     </table>
   </div>
 
   <div class="mt-10">
-    <p class="eyebrow">Difficulty & competition</p>
-    <h2>Match context</h2>
+    <p class="eyebrow">Context</p>
+    <h2>Match environment</h2>
     <dl class="context-grid">
       <div><dt><abbr title="Average pre-match Elo rating of the opponents faced. Higher values mean stronger opponents.">Average opponent Elo</abbr></dt><dd>{{ score.context_summary.average_opponent_elo|default_if_none:'—'|floatformat:1 }}</dd></div>
       <div><dt><abbr title="Average multiplier applied to context-adjusted counting metrics, reflecting opponent strength, competition and league context; 1.000 is neutral.">Average context factor</abbr></dt><dd>{{ score.context_summary.average_context_factor|default_if_none:'—'|floatformat:3 }}</dd></div>
@@ -65,30 +47,27 @@
   {% include 'components/eligibility_notice.html' %}
 {% endif %}
 
-<section class="mb-10">
-  <div class="mb-5">
-    <p class="eyebrow">Week by week</p>
-    <h2>Season ranking history</h2>
+<section class="mt-12">
+  <div class="section-heading">
+    <div><p class="eyebrow">Weekly progress</p><h2>Season ranking history</h2></div>
+    <p>Better ranks appear higher.</p>
   </div>
   {% if chart_points %}
-  <div class="border border-black/10 bg-white p-4 sm:p-6">
-    <svg viewBox="0 0 1000 320" role="img" aria-label="Season ranking position over time, with better ranks higher" style="display:block;width:100%;height:auto;max-height:24rem">
+  <div class="border-y border-line py-5 overflow-x-auto">
+    <svg viewBox="0 0 1000 320" role="img" aria-label="Season ranking position over time, with better ranks higher" style="display:block;width:100%;height:auto;min-width:700px;max-height:24rem">
       <title>{{ player.name }} season ranking progression</title>
-      <line x1="72" y1="40" x2="72" y2="260" stroke="#111318" stroke-opacity=".35"/>
-      <line x1="72" y1="260" x2="960" y2="260" stroke="#111318" stroke-opacity=".35"/>
-      <text x="20" y="20" fill="#111318" font-size="14" font-weight="700">Rank</text>
-      {% for tick in chart_ranks %}<line x1="72" y1="{{ tick.y }}" x2="960" y2="{{ tick.y }}" stroke="#111318" stroke-opacity=".08"/><text x="60" y="{{ tick.y }}" text-anchor="end" dominant-baseline="middle" fill="#111318" fill-opacity=".55" font-size="13">#{{ tick.value }}</text>{% endfor %}
-      <polyline points="{% for point in chart_points %}{{ point.x }},{{ point.y }} {% endfor %}" fill="none" stroke="#C9A861" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
-      {% for point in chart_points %}<circle cx="{{ point.x }}" cy="{{ point.y }}" r="5" fill="#111318" stroke="#C9A861" stroke-width="3"><title>{{ point.item.snapshot.cutoff_at|date:'j M Y' }}: rank #{{ point.item.rank }}, score {{ point.item.score|floatformat:2 }}</title></circle>{% endfor %}
-      {% for tick in chart_dates %}<text x="{{ tick.x }}" y="294" text-anchor="middle" fill="#111318" fill-opacity=".55" font-size="12">{{ tick.item.snapshot.cutoff_at|date:'j M Y' }}</text>{% endfor %}
+      <line x1="72" y1="40" x2="72" y2="260" stroke="#d1d5db"/>
+      <line x1="72" y1="260" x2="960" y2="260" stroke="#d1d5db"/>
+      {% for tick in chart_ranks %}<line x1="72" y1="{{ tick.y }}" x2="960" y2="{{ tick.y }}" stroke="#eef0f2"/><text x="60" y="{{ tick.y }}" text-anchor="end" dominant-baseline="middle" fill="#6b7280" font-size="12">#{{ tick.value }}</text>{% endfor %}
+      <polyline points="{% for point in chart_points %}{{ point.x }},{{ point.y }} {% endfor %}" fill="none" stroke="#111318" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+      {% for point in chart_points %}<circle cx="{{ point.x }}" cy="{{ point.y }}" r="4.5" fill="#c6a252"><title>{{ point.item.snapshot.cutoff_at|date:'j M Y' }}: rank #{{ point.item.rank }}, score {{ point.item.score|floatformat:2 }}</title></circle>{% endfor %}
+      {% for tick in chart_dates %}<text x="{{ tick.x }}" y="294" text-anchor="middle" fill="#6b7280" font-size="11">{{ tick.item.snapshot.cutoff_at|date:'j M Y' }}</text>{% endfor %}
     </svg>
-    <p class="mt-3 text-xs text-black/45">Hover a point for its date, rank and score.</p>
   </div>
   {% else %}
-  <div class="empty">No published ranking history yet.</div>
+    <p class="text-sm text-muted">No published history yet.</p>
   {% endif %}
 </section>
 
-<a class="button" href="{% url 'compare' %}?a={{ player.slug }}">Compare this player</a>
-</div>
+<a class="button mt-8" href="{% url 'compare' %}?a={{ player.slug }}">Compare this player</a>
 {% endblock %}

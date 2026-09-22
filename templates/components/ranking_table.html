@@ -9,7 +9,7 @@
         <th scope="col">Team</th>
         <th scope="col">Minutes</th>
         {% for label in headline_labels %}<th scope="col">{{ label }}</th>{% endfor %}
-        <th scope="col">Merit</th>
+        <th scope="col">Score</th>
       </tr>
     </thead>
     <tbody>{% for entry in page %}{% include 'components/ranking_row.html' %}{% endfor %}</tbody>
@@ -17,5 +17,5 @@
 </div>
 {% include 'components/pagination.html' %}
 {% else %}
-{% include 'components/empty_state.html' %}
+  {% include 'components/empty_state.html' %}
 {% endif %}

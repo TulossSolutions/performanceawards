@@ -1,15 +1,16 @@
 <header class="header">
-  <a class="brand group flex items-center gap-3" href="{% url 'home' %}" aria-label="Merit home">
-    <svg class="h-7 w-7 shrink-0" viewBox="0 0 64 64" aria-hidden="true">
-      <path d="M5 52V11l11 8v33H5Zm17 0V30l10 7v15H22Z" fill="currentColor"/>
-      <path d="M32 52V31l5-4 5 4v21H32Z" fill="#c9a861"/>
-      <path d="M48 52V30l11-8v30H48Z" fill="currentColor"/>
+  <a class="brand" href="{% url 'home' %}" aria-label="Merit home">
+    <svg width="24" height="20" viewBox="0 0 120 96" aria-hidden="true">
+      <path fill="currentColor" d="M0 96V0l26 18v78H0Zm39 0V39l18 13v44H39Zm29 0V52l18-13v57H68Zm31 0V18L145 0v96h-26Z" transform="scale(.8276)"/>
+      <path fill="#c6a252" d="M54 96V48l10-8 10 8v48H54Z"/>
     </svg>
-    <span class="text-ink transition-colors group-hover:text-accent-deep">MERIT</span>
+    MERIT
   </a>
-
-  <nav aria-label="Main navigation" class="overflow-x-auto">
-    <a href="{% url 'ranking_index' %}">Rankings</a>
+  <nav aria-label="Main navigation">
+    <a href="{% url 'ranking' 'attackers' %}">Attackers</a>
+    <a href="{% url 'ranking' 'midfielders' %}">Midfielders</a>
+    <a href="{% url 'ranking' 'defenders' %}">Defenders</a>
+    <a href="{% url 'ranking' 'goalkeepers' %}">Goalkeepers</a>
     <a href="{% url 'compare' %}">Compare</a>
     <a href="{% url 'methodology' %}">Methodology</a>
     <a href="{% url 'roadmap' %}">Roadmap</a>

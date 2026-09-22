@@ -40,10 +40,8 @@
       <section class="ranking-card">
         <header class="ranking-card-head">
           <div>
-            <p class="card-kicker">Position ranking</p>
             <h3>{{ position }}</h3>
           </div>
-          <span class="top-label">Top 100</span>
         </header>
 
         {% if items %}
@@ -54,7 +52,6 @@
 
                 <div class="leader-player">
                   <a href="{% url 'player_detail' entry.player.slug %}">{{ entry.player.name }}</a>
-                  <span>Season score</span>
                 </div>
 
                 <div class="leader-score">

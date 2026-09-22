@@ -1,42 +1,26 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="mx-auto max-w-7xl px-5 pb-6 pt-14 sm:px-8 lg:px-10 lg:pt-20">
-  <div class="max-w-3xl">
-    <p class="mb-4 text-xs font-black uppercase tracking-[0.2em] text-[#9a7d38]">Audit trail</p>
-    <h1>Formula changelog</h1>
-    <p class="mt-5 max-w-2xl text-base leading-7 text-black/60 sm:text-lg">Every scoring formula is versioned. Changes stay visible so published rankings can always be traced back to the rules that produced them.</p>
-  </div>
+<section class="intro">
+  <p class="eyebrow">Model history</p>
+  <h1>Formula changelog</h1>
+  <p class="home-deck">Every published ranking is tied to a versioned formula. Changes are documented rather than silently rewriting the rules.</p>
 </section>
 
-<section class="mx-auto max-w-7xl px-5 py-8 sm:px-8 lg:px-10">
-  {% if formulas %}
-  <div class="relative max-w-4xl border-l border-black/15 pl-6 sm:pl-9">
-    {% for formula in formulas %}
-    <article class="relative mb-8 border border-black/10 bg-white p-6 sm:p-8">
-      <span class="absolute -left-[31px] top-9 size-3 rounded-full border-2 border-[#f4f2ec] bg-[#c9a861] sm:-left-[43px]"></span>
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p class="text-[11px] font-black uppercase tracking-[0.16em] text-black/40">Formula version</p>
-          <h2 class="mt-1 text-3xl">v{{ formula.version }}</h2>
-        </div>
-        <div class="sm:text-right">
-          <p class="text-[11px] font-black uppercase tracking-[0.16em] text-black/40">Activated</p>
-          <p class="mt-1 font-mono text-sm font-bold">{{ formula.activated_at|date:'j M Y H:i'|default:'Not activated' }}</p>
-        </div>
-      </div>
-      {% if formula.notes %}<p class="mt-6 max-w-3xl leading-7 text-black/65">{{ formula.notes }}</p>{% endif %}
-      <div class="mt-6 border-t border-black/10 pt-5">
-        <p class="mb-2 text-[11px] font-black uppercase tracking-[0.16em] text-black/40">SHA-256 checksum</p>
-        <code class="block overflow-x-auto bg-[#111318] px-4 py-3 font-mono text-xs text-white/75">{{ formula.checksum_sha256 }}</code>
-      </div>
-    </article>
-    {% endfor %}
-  </div>
-  {% else %}
-  <div class="max-w-3xl border border-dashed border-black/20 bg-white p-8">
-    <p class="font-bold">No formulas imported.</p>
-    <p class="mt-2 text-sm text-black/55">The changelog will appear here once a scoring formula is activated.</p>
-  </div>
-  {% endif %}
-</section>
+<div class="space-y-3">
+  {% for formula in formulas %}
+  <article class="card grid md:grid-cols-[8rem_1fr_auto] gap-4 md:gap-6 items-start">
+    <div>
+      <p class="eyebrow">Formula</p>
+      <h2>v{{ formula.version }}</h2>
+    </div>
+    <div class="space-y-2">
+      <p class="text-sm text-muted">Activated {{ formula.activated_at|date:'j M Y H:i'|default:'Not activated' }}</p>
+      <p class="text-sm leading-6">{{ formula.notes }}</p>
+    </div>
+    <code class="text-[10px] text-muted break-all md:max-w-56">{{ formula.checksum_sha256 }}</code>
+  </article>
+  {% empty %}
+    {% include 'components/empty_state.html' with message='No formulas imported.' %}
+  {% endfor %}
+</div>
 {% endblock %}

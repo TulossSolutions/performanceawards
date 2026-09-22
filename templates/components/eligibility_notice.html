@@ -1,16 +1,4 @@
-<div class="empty" role="status">
-  <div class="flex items-start gap-4">
-    <span class="mt-1 inline-flex h-8 w-8 shrink-0 items-center justify-center bg-accent text-sm font-black text-ink">M</span>
-    <div class="min-w-0 flex-1">
-      <p class="font-black tracking-[-0.02em] text-ink">Not yet eligible</p>
-      <p class="mt-1 text-sm leading-6 text-black/60">
-        This player has not reached the minimum playing-time threshold{% if score %}: <strong class="font-semibold text-ink">{{ score.minutes }}</strong> of <strong class="font-semibold text-ink">{{ required_minutes }}</strong> required minutes{% endif %}.
-      </p>
-      {% if score and required_minutes %}
-      <div class="mt-4 h-1.5 overflow-hidden bg-black/10" aria-hidden="true">
-        <div class="h-full bg-accent" style="width:{% widthratio score.minutes required_minutes 100 %}%;max-width:100%"></div>
-      </div>
-      {% endif %}
-    </div>
-  </div>
+<div class="empty">
+  <strong>Not yet eligible.</strong>
+  <span class="text-muted">Not enough eligible minutes yet{% if score %} — {{ score.minutes }} / {{ required_minutes }} required minutes{% endif %}.</span>
 </div>

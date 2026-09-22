@@ -1,6 +1,4 @@
 {% extends 'base.html' %}
 {% block content %}
-<div id="ranking-region" aria-live="polite" aria-busy="false" class="shell relative">
-  {% include 'rankings/partials/ranking_content.html' %}
-</div>
+<div id="ranking-region" aria-live="polite">{% include 'rankings/partials/ranking_content.html' %}</div>
 {% endblock %}

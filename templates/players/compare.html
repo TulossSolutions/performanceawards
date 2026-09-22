@@ -1,52 +1,30 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="shell">
-<section class="intro grid gap-8 lg:grid-cols-[1.15fr_.85fr] lg:items-end">
-  <div>
-    <p class="eyebrow">Head to head</p>
-    <h1>Compare players</h1>
-    <p class="mt-4 max-w-2xl text-base leading-7 text-black/60">Put two ranked players side by side and inspect the score, underlying metrics and the context behind each result.</p>
-  </div>
-  <div class="border-l-2 border-accent pl-5 text-sm leading-6 text-black/60">
-    <strong class="block text-xs uppercase tracking-[0.16em] text-ink">Read scores in context</strong>
-    Players are normalized against their own position cohort. Cross-position scores can be viewed together, but should not be treated as like-for-like measurements.
-  </div>
+<section class="intro">
+  <p class="eyebrow">Head to head</p>
+  <h1>Compare players</h1>
+  <p class="home-deck">Compare ranked players using the same published score breakdown and context.</p>
 </section>
 
-<section class="mb-10 border border-black/10 bg-white p-5 sm:p-6">
-  <form class="grid gap-4 lg:grid-cols-[1fr_auto_1fr_auto] lg:items-end" method="get" hx-get="{% url 'compare' %}" hx-target="#comparison-region" hx-push-url="true">
-    <div>
-      <label class="mb-2 block text-[11px] font-black uppercase tracking-[0.14em] text-black/45" for="player-a">Player A</label>
-      <select class="w-full" id="player-a" name="a">
-        <option value="">Select player</option>
-        {% for player in players %}<option value="{{ player.slug }}" {% if a and player.pk == a.pk %}selected{% endif %}>{{ player.name }} — {{ player.get_primary_position_display }}</option>{% endfor %}
-      </select>
-    </div>
+<form class="compare-form" method="get" hx-get="{% url 'compare' %}" hx-target="#comparison-region" hx-push-url="true">
+  <label class="text-xs font-bold" for="player-a">Player A</label>
+  <select id="player-a" name="a">
+    <option value="">Select player</option>
+    {% for player in players %}<option value="{{ player.slug }}" {% if a and player.pk == a.pk %}selected{% endif %}>{{ player.name }} — {{ player.get_primary_position_display }}</option>{% endfor %}
+  </select>
+  <label class="text-xs font-bold" for="player-b">Player B</label>
+  <select id="player-b" name="b">
+    <option value="">Select player</option>
+    {% for player in players %}<option value="{{ player.slug }}" {% if b and player.pk == b.pk %}selected{% endif %}>{{ player.name }} — {{ player.get_primary_position_display }}</option>{% endfor %}
+  </select>
+  <button class="button" type="submit">Compare</button>
+</form>
 
-    <div class="hidden pb-3 text-center font-mono text-xs font-black uppercase tracking-[0.18em] text-black/35 lg:block">vs</div>
-
-    <div>
-      <label class="mb-2 block text-[11px] font-black uppercase tracking-[0.14em] text-black/45" for="player-b">Player B</label>
-      <select class="w-full" id="player-b" name="b">
-        <option value="">Select player</option>
-        {% for player in players %}<option value="{{ player.slug }}" {% if b and player.pk == b.pk %}selected{% endif %}>{{ player.name }} — {{ player.get_primary_position_display }}</option>{% endfor %}
-      </select>
-    </div>
-
-    <button class="button !mt-0 h-[46px]" type="submit">Compare</button>
-  </form>
-
-  <div class="mt-6 border-t border-black/10 pt-5">
-    <label class="mb-2 block text-[11px] font-black uppercase tracking-[0.14em] text-black/45" for="player-search">Find a player</label>
-    <div class="relative max-w-xl">
-      <input class="w-full" id="player-search" name="q" type="search" minlength="2" hx-get="{% url 'player_search' %}" hx-trigger="input changed delay:250ms" hx-target="#player-search-results" placeholder="Search by player name">
-      <div id="player-search-results" aria-live="polite"></div>
-    </div>
-  </div>
-</section>
-
-<div id="comparison-region" aria-live="polite">
-  {% include 'players/partials/comparison.html' %}
+<div class="mt-8 max-w-xl">
+  <label class="block mb-2 text-xs font-bold" for="player-search">Find a player</label>
+  <input class="w-full" id="player-search" name="q" type="search" minlength="2" hx-get="{% url 'player_search' %}" hx-trigger="input changed delay:250ms" hx-target="#player-search-results" placeholder="Type at least 2 characters">
+  <div id="player-search-results" aria-live="polite"></div>
 </div>
-</div>
+
+<div id="comparison-region" class="mt-10" aria-live="polite">{% include 'players/partials/comparison.html' %}</div>
 {% endblock %}

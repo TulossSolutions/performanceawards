@@ -1,29 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="mx-auto flex min-h-[62vh] max-w-4xl items-center py-10 md:py-16">
-  <div class="grid w-full gap-10 lg:grid-cols-[1fr_auto] lg:items-end">
-    <div>
-      <p class="eyebrow">404 · Out of position</p>
-      <h1 class="max-w-3xl">This page isn't in the ranking.</h1>
-      <p class="mt-5 max-w-xl text-lg leading-8 text-black/60">
-        The player, season, or ranking you requested does not exist or may have moved.
-      </p>
-      <div class="mt-8 flex flex-wrap gap-3">
-        <a class="button !mt-0" href="{% url 'ranking_index' %}">View rankings</a>
-        <a class="inline-flex items-center px-5 py-3 font-bold no-underline hover:text-accent-deep" href="{% url 'home' %}">Back to Merit →</a>
-      </div>
-    </div>
-
-    <div class="hidden select-none lg:block" aria-hidden="true">
-      <div class="mb-5 flex items-end justify-end gap-2">
-        <span class="h-16 w-8 bg-ink"></span>
-        <span class="h-10 w-8 bg-ink"></span>
-        <span class="h-24 w-8 bg-accent"></span>
-        <span class="h-12 w-8 bg-ink"></span>
-        <span class="h-20 w-8 bg-ink"></span>
-      </div>
-      <p class="text-right font-mono text-8xl font-black tracking-[-0.08em] text-black/[0.07]">404</p>
-    </div>
-  </div>
+<section class="max-w-2xl py-16 md:py-24">
+  <p class="eyebrow">404</p>
+  <h1>Page not found.</h1>
+  <p class="home-deck">The requested player, season, or ranking does not exist.</p>
+  <a class="button mt-6" href="{% url 'home' %}">Back to rankings</a>
 </section>
 {% endblock %}
