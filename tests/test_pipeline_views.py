@@ -60,8 +60,8 @@ def test_home_shows_ranking_movement_next_to_score(pipeline):
     snapshot.entries.filter(pk=entry.pk).update(previous_rank=entry.rank+2,movement=2)
     cache.clear()
     content=Client().get("/").content
-    assert b'images/merit_logo_icon.png' in content
-    assert b'images/merit_logo_text.png' in content
+    assert b'images/merit_logo_full.png' in content
+    assert b'images/merit_logo_favicon.png' in content
     assert b"No votes. Just performance." in content
     assert b'<meta name="description" content="No votes. Just performance.">' in content
     assert "Merit — No votes. Just performance.".encode() in content

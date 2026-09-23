@@ -1,10 +1,7 @@
+{% load static %}
 <header class="header">
   <a class="brand" href="{% url 'home' %}" aria-label="Merit home">
-    <svg width="24" height="20" viewBox="0 0 120 96" aria-hidden="true">
-      <path fill="currentColor" d="M0 96V0l26 18v78H0Zm39 0V39l18 13v44H39Zm29 0V52l18-13v57H68Zm31 0V18L145 0v96h-26Z" transform="scale(.8276)"/>
-      <path fill="#c6a252" d="M54 96V48l10-8 10 8v48H54Z"/>
-    </svg>
-    MERIT
+    <img src="{% static 'images/merit_logo_full.png' %}" alt="Merit" width="132" height="24" style="display:block;width:132px;height:24px;object-fit:cover;object-position:center">
   </a>
   <nav aria-label="Main navigation">
     <a href="{% url 'ranking' 'attackers' %}">Attackers</a>
