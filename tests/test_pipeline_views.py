@@ -50,6 +50,11 @@ def test_public_pages_and_htmx(pipeline):
     assert b"Merit Manifesto" in manifesto.content
     assert b"No votes. Just performance." in manifesto.content
     assert b"You should never have to wonder how the winner was chosen." in manifesto.content
+    assert manifesto.content.count(b"<ul>") == 14
+    assert b"<li>Matches played.</li>" in manifesto.content
+    assert b"<li><strong>Goalkeepers.</strong></li>" in manifesto.content
+    roadmap = client.get("/roadmap/")
+    assert roadmap.content.count(b"list-disc") == 4
     player = client.get("/players/demo-player-1/")
     assert b"Season ranking position over time" in player.content
     assert b"<polyline" in player.content
@@ -62,6 +67,9 @@ def test_home_shows_ranking_movement_next_to_score(pipeline):
     content=Client().get("/").content
     assert b'images/merit_logo_full.png' in content
     assert b'images/merit_logo_favicon.png' in content
+    nav = content.split(b'<nav aria-label="Main navigation">', 1)[1].split(b'</nav>', 1)[0]
+    assert all(label not in nav for label in (b"Attackers", b"Midfielders", b"Defenders", b"Goalkeepers"))
+    assert all(label in nav for label in (b"Compare", b"Methodology", b"Roadmap", b"Manifesto"))
     assert b"No votes. Just performance." in content
     assert b'<meta name="description" content="No votes. Just performance.">' in content
     assert "Merit — No votes. Just performance.".encode() in content
